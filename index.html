@@ -445,11 +445,16 @@ function requireSafeUser(){
 function val(id){ return document.getElementById(id).value.trim(); }
 
 function addCmd(cmd){
-  if(commands.includes(cmd)) return;
+  const existing = commands.indexOf(cmd);
+  if(existing !== -1){
+    highlightLine(existing);
+    return existing;
+  }
   commands.push(cmd);
   const newIdx = commands.length - 1;
   render();
   highlightLine(newIdx);
+  return newIdx;
 }
 function highlightLine(idx){
   const box = document.getElementById('outBox');
@@ -724,14 +729,8 @@ function renderAIChat(){
       inner = `<div>${escapeHtml(m.clarify)}</div>`;
     } else if(m.cmd){
       inner = `<div>${escapeHtml(m.explain || '')}</div>
-        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>`;
-      if(m.accepted){
-        inner += `<div class="accepted">✓ ro'yxatga qo'shildi</div>`;
-      } else {
-        inner += `<div class="ai-actions">
-          <button onclick="acceptAICmd(${idx})">Ro'yxatga qo'shish</button>
-        </div>`;
-      }
+        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
+        <div class="accepted">✓ men buni pastdagi ro'yxatga #${m.lineNum} qilib chiqarib qo'ydim</div>`;
     } else {
       inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
     }
@@ -813,6 +812,10 @@ async function askAI(){
     } else if(parsed.command && parsed.command.trim()){
       entry.cmd = parsed.command.trim();
       entry.explain = parsed.explain || '';
+      // Buyruq darhol pastdagi output oynasiga chiqariladi — qo'lda bosish shart emas.
+      const lineIdx = addCmd(entry.cmd);
+      entry.lineNum = lineIdx + 1;
+      entry.accepted = true;
     } else {
       entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
     }
@@ -824,15 +827,6 @@ async function askAI(){
     renderAIChat();
     saveAIHistory();
   }
-}
-
-function acceptAICmd(idx){
-  const m = aiHistory[idx];
-  if(!m || !m.cmd) return;
-  addCmd(m.cmd);
-  m.accepted = true;
-  renderAIChat();
-  saveAIHistory();
 }
 
 document.getElementById('groqKeyInput').addEventListener('keydown', (e) => {
