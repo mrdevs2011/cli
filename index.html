@@ -27,6 +27,20 @@
   h1{ font-size: 22px; font-weight:700; margin-bottom: 4px; color:var(--accent-dark); }
   .sub{ font-size:13px; color:var(--text-dim); margin-bottom:20px; }
 
+  /* TAB SWITCHER */
+  .tabs{
+    display:flex; flex-wrap:wrap; gap:4px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:4px; margin-top:20px;
+  }
+  .tab-btn{
+    flex:1; min-width:70px; background:transparent; color:var(--text-dim); border:none;
+    font-size:12px; font-weight:600; padding:9px 4px; border-radius:9px;
+    margin-top:0; cursor:pointer; transition: background .15s ease, color .15s ease;
+  }
+  .tab-btn:hover{ background:#f2faff; color:var(--accent-dark); }
+  .tab-btn.active{ background:var(--accent); color:#ffffff; }
+  .tab-panel .card:first-child{ margin-top:16px; }
+
   /* USER SELECT */
   select, input[type="text"], input[type="date"]{
     width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
@@ -132,6 +146,40 @@
 
   .hint{ font-size:12px; color:var(--text-dim); margin-top:6px; }
 
+  /* AI YORDAMCHI — chat ko'rinishi */
+  .ai-clear{
+    font-size:12px; color:var(--text-dim); cursor:pointer; text-decoration:underline;
+  }
+  .ai-clear:hover{ color:var(--red); }
+  .ai-chat{
+    margin-top:12px; max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
+    scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+  }
+  .ai-chat::-webkit-scrollbar{ width:5px; }
+  .ai-chat::-webkit-scrollbar-track{ background:transparent; }
+  .ai-chat::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
+  .ai-empty{ color:var(--text-dim); font-size:13px; font-style:italic; padding:6px 0; }
+
+  .ai-msg{ display:flex; }
+  .ai-msg.user{ justify-content:flex-end; }
+  .ai-msg.assistant{ justify-content:flex-start; }
+  .ai-bubble{
+    max-width:88%; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.5;
+  }
+  .ai-msg.user .ai-bubble{ background:var(--accent); color:#ffffff; border-bottom-right-radius:3px; }
+  .ai-msg.assistant .ai-bubble{ background:#f2faff; color:var(--text); border:1px solid var(--line); border-bottom-left-radius:3px; }
+
+  .ai-cmd{
+    background:#0f2536; color:#dbeeff; border-radius:8px; padding:10px 12px;
+    font-family:'SF Mono', Consolas, monospace; font-size:12px; overflow-x:auto;
+    white-space:pre; margin-top:8px; margin-bottom:8px;
+  }
+  .ai-actions{ display:flex; gap:8px; }
+  .ai-actions button{ flex:1; margin-top:0; padding:8px 10px; font-size:12.5px; }
+  .ai-actions .accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding:8px 0; }
+  .ai-loading{ color:var(--text-dim); font-size:13px; font-style:italic; }
+  .ai-error{ color:var(--red); font-size:13px; }
+
   /* FULLSCREEN COMMAND VIEW */
   .fs-overlay{
     display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
@@ -181,88 +229,149 @@
   </select>
   <input type="text" id="customUser" placeholder="username" maxlength="32" style="display:none; margin-top:8px;">
 
-  <button style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
-
-  <div class="card">
-    <h2>Vaqt qo'shish</h2>
-    <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
-    <div class="row">
-      <input type="text" id="addMin" value="60" inputmode="numeric">
-      <span class="unit">min</span>
-    </div>
-    <button style="width:100%" onclick="cmdAddTime()">Qo'shish</button>
+  <!-- TAB SWITCHER -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabBtnQuick" onclick="switchTab('quick')">Tezkor</button>
+    <button class="tab-btn" id="tabBtnSettings" onclick="switchTab('settings')">Sozlamalar</button>
+    <button class="tab-btn" id="tabBtnDanger" onclick="switchTab('danger')">Xavfli</button>
+    <button class="tab-btn" id="tabBtnView" onclick="switchTab('view')">Ko'rish</button>
+    <button class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">✦ AI</button>
   </div>
 
-  <div class="card">
-    <h2>Kunlik limit</h2>
-    <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
-    <div class="row">
-      <input type="text" id="dailyMin" value="120" inputmode="numeric">
-      <span class="unit">min/kun</span>
+  <!-- TEZKOR: har kuni tez-tez ishlatiladigan amallar -->
+  <div class="tab-panel" id="panelQuick">
+
+    <div class="card">
+      <h2>Vaqt qo'shish</h2>
+      <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
+      <div class="row">
+        <input type="text" id="addMin" value="60" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+      <button style="width:100%" onclick="cmdAddTime()">Qo'shish</button>
     </div>
-    <button style="width:100%" onclick="cmdSetDaily()">O'rnatish</button>
+
+    <div class="card">
+      <h2>Qulfni ochish</h2>
+      <div class="desc">Joriy cooldown/lockni hozir tozalaydi.</div>
+      <button class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
+    </div>
+
   </div>
 
-  <div class="card">
-    <h2>Bir o'tirish va tanaffus</h2>
-    <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
-    <label>Bir o'tirish chegarasi</label>
-    <div class="row">
-      <input type="text" id="sessMin" value="40" inputmode="numeric">
-      <span class="unit">min</span>
+  <!-- SOZLAMALAR: kamroq o'zgaradigan konfiguratsiya -->
+  <div class="tab-panel" id="panelSettings" style="display:none;">
+
+    <div class="card">
+      <h2>Kunlik limit</h2>
+      <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
+      <div class="row">
+        <input type="text" id="dailyMin" value="120" inputmode="numeric">
+        <span class="unit">min/kun</span>
+      </div>
+      <button style="width:100%" onclick="cmdSetDaily()">O'rnatish</button>
     </div>
-    <label>Tanaffus</label>
-    <div class="row">
-      <input type="text" id="cooldownMin" value="240" inputmode="numeric">
-      <span class="unit">min</span>
+
+    <div class="card">
+      <h2>Bir o'tirish va tanaffus</h2>
+      <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
+      <label>Bir o'tirish chegarasi</label>
+      <div class="row">
+        <input type="text" id="sessMin" value="40" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+      <label>Tanaffus</label>
+      <div class="row">
+        <input type="text" id="cooldownMin" value="240" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+      <button style="width:100%" onclick="cmdSetSession()">O'rnatish</button>
     </div>
-    <button style="width:100%" onclick="cmdSetSession()">O'rnatish</button>
+
+    <div class="card">
+      <h2>Yangi user qo'shish</h2>
+      <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
+      <div class="row">
+        <input type="text" id="newUserMin" value="120" inputmode="numeric">
+        <span class="unit">min/kun</span>
+      </div>
+      <button class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
+    </div>
+
   </div>
 
-  <div class="card">
-    <h2>Qulf</h2>
-    <div class="desc">Joriy qulfni ochish yoki kunni to'liq qayta boshlash.</div>
-    <button class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
-    <button class="danger" style="width:100%" onclick="cmdReset()">To'liq reset</button>
-  </div>
+  <!-- XAVFLI: ehtiyot bo'lish kerak bo'lgan, qaytarib bo'lmaydigan amallar -->
+  <div class="tab-panel" id="panelDanger" style="display:none;">
 
-  <div class="card">
-    <h2>Tarix</h2>
-    <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi.</div>
-    <div class="row">
-      <input type="text" id="histDays" value="14" inputmode="numeric">
-      <span class="unit">kun</span>
+    <div class="card">
+      <h2>To'liq reset</h2>
+      <div class="desc">Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.</div>
+      <button class="danger" style="width:100%" onclick="cmdReset()">Reset qilish</button>
     </div>
-    <button class="secondary" style="width:100%" onclick="cmdHistory()">Ko'rsatish</button>
-  </div>
 
-  <div class="card">
-    <h2>Yangi user qo'shish</h2>
-    <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
-    <div class="row">
-      <input type="text" id="newUserMin" value="120" inputmode="numeric">
-      <span class="unit">min/kun</span>
+    <div class="card">
+      <h2>O'tgan kunni to'g'irlash</h2>
+      <div class="desc">Xato ketgan sanadagi vaqtni to'g'ridan-to'g'ri SQLite orqali tuzatadi.</div>
+      <label>Sana</label>
+      <input type="date" id="editDate">
+      <label>To'g'ri qiymat</label>
+      <div class="row">
+        <input type="text" id="editMin" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+      <button class="secondary" style="width:100%" onclick="cmdEditHistory()">To'g'irlash</button>
     </div>
-    <button class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
-  </div>
 
-  <div class="card">
-    <h2>O'tgan kunni to'g'irlash</h2>
-    <div class="desc">Xato ketgan sanadagi vaqtni tuzatadi.</div>
-    <label>Sana</label>
-    <input type="date" id="editDate">
-    <label>To'g'ri qiymat</label>
-    <div class="row">
-      <input type="text" id="editMin" inputmode="numeric">
-      <span class="unit">min</span>
+    <div class="card">
+      <h2>Hammasi uchun</h2>
+      <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi. Bekor qilib bo'lmaydi.</div>
+      <button class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
     </div>
-    <button class="secondary" style="width:100%" onclick="cmdEditHistory()">To'g'irlash</button>
+
   </div>
 
-  <div class="card">
-    <h2>Hammasi uchun</h2>
-    <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi.</div>
-    <button class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
+  <!-- KO'RISH: faqat ko'rsatadigan, hech narsani o'zgartirmaydigan buyruqlar -->
+  <div class="tab-panel" id="panelView" style="display:none;">
+
+    <div class="card">
+      <h2>Holat</h2>
+      <div class="desc">Barcha userlarning joriy holatini ko'rsatadi. Hech narsa o'zgarmaydi.</div>
+      <button style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
+    </div>
+
+    <div class="card">
+      <h2>Tarix</h2>
+      <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi. Hech narsa o'zgarmaydi.</div>
+      <div class="row">
+        <input type="text" id="histDays" value="14" inputmode="numeric">
+        <span class="unit">kun</span>
+      </div>
+      <button style="width:100%" onclick="cmdHistory()">Ko'rsatish</button>
+    </div>
+
+  </div>
+
+  <!-- AI: tabiiy tilda so'rov, bw.md hujjatiga tayanib buyruq taklif qiladi.
+       Suhbat tarixi window.storage orqali saqlanadi va keyingi safar ochilganda tiklanadi. -->
+  <div class="tab-panel" id="panelAI" style="display:none;">
+
+    <div class="card">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="margin:0;">AI yordamchi</h2>
+        <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
+      </div>
+      <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Hech narsa avtomatik ishga tushmaydi.</div>
+
+      <div class="ai-chat" id="aiChat">
+        <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
+      </div>
+
+      <div class="row" style="margin-top:14px;">
+        <input type="text" id="aiQuery" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh">
+      </div>
+      <button style="width:100%" id="aiAskBtn" onclick="askAI()">So'rash</button>
+    </div>
+
   </div>
 
   <!-- OUTPUT -->
@@ -303,6 +412,15 @@
 
   const userSelect = document.getElementById('userSelect');
   const customUser = document.getElementById('customUser');
+
+  function switchTab(name){
+    const panels = { quick: 'panelQuick', settings: 'panelSettings', danger: 'panelDanger', view: 'panelView', ai: 'panelAI' };
+    const btns = { quick: 'tabBtnQuick', settings: 'tabBtnSettings', danger: 'tabBtnDanger', view: 'tabBtnView', ai: 'tabBtnAI' };
+    Object.keys(panels).forEach(key => {
+      document.getElementById(panels[key]).style.display = (key === name) ? 'block' : 'none';
+      document.getElementById(btns[key]).classList.toggle('active', key === name);
+    });
+  }
 
   userSelect.addEventListener('change', () => {
     if(userSelect.value === '__custom'){
@@ -557,6 +675,193 @@
     addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
   }
 
+  // ===== AI YORDAMCHI =====
+  // Bu ./bw.md faylining o'rnini bosadigan hujjat — brotherwatch CLI va uning
+  // SQLite sxemasini tasvirlaydi. AI shu hujjatga tayanib javob beradi.
+  // Haqiqiy loyihada buni alohida bw.md faylidan o'qib, shu yerga qo'yish mumkin.
+  const BW_DOC = [
+    "# brotherwatch — ekran vaqtini boshqarish CLI",
+    "Binary: sudo /usr/local/bin/brotherwatch",
+    "",
+    "## Buyruqlar",
+    "status",
+    "  Barcha userlarning holatini ko'rsatadi. Argumentsiz.",
+    "",
+    "add-time <username> <minutes>",
+    "  Bugungi qolgan vaqtga daqiqa qo'shadi. Ayirish uchun manfiy son va -- ajratkichi kerak:",
+    "  sudo /usr/local/bin/brotherwatch add-time -- <username> -30",
+    "",
+    "set-daily <username> <minutes>",
+    "  Kunlik umumiy limitni o'zgartiradi (musbat butun son).",
+    "",
+    "set-session <username> --session-min <N> --cooldown-min <N>",
+    "  Bir o'tirish chegarasi va tanaffus vaqtini o'rnatadi. Ikkalasi ham majburiy.",
+    "",
+    "unlock <username>",
+    "  Joriy cooldown/lockni hozir tozalaydi.",
+    "",
+    "reset <username>",
+    "  Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.",
+    "",
+    "history <username> [--days N]",
+    "  Oxirgi N kunlik sarfni ko'rsatadi (standart 14).",
+    "",
+    "add-user <username> <minutes>",
+    "  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan.",
+    "",
+    "## Xavfli amallar (to'g'ridan-to'g'ri SQLite orqali)",
+    "DB yo'li: /var/lib/brotherwatch/brotherwatch.db",
+    "Jadval daily_usage(username, date, minutes_used) — o'tgan kunni tuzatish uchun:",
+    "  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE daily_usage SET minutes_used = <N> WHERE username = '<user>' AND date = '<YYYY-MM-DD>';\"",
+    "Barcha userlarni bugun uchun tozalash:",
+    "  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');\"",
+    "",
+    "## Qoidalar",
+    "- Username: faqat harf, raqam, - va _ (max 32 belgi).",
+    "- Har bir buyruq sudo bilan boshlanadi.",
+    "- Sana formati doim YYYY-MM-DD.",
+    "- Ma'lum userlar: muhammad, komoliddin — lekin boshqa username ham bo'lishi mumkin.",
+  ].join('\n');
+
+  // ===== AI SUHBAT TARIXI =====
+  // aiHistory elementlari: { role: 'user'|'assistant', text, cmd, clarify, accepted, time }
+  let aiHistory = [];
+  const AI_STORAGE_KEY = 'ai_chat_history';
+
+  async function loadAIHistory(){
+    try{
+      const r = await window.storage.get(AI_STORAGE_KEY, false);
+      if(r && r.value){
+        aiHistory = JSON.parse(r.value);
+      }
+    }catch(err){
+      aiHistory = []; // hali hech narsa saqlanmagan yoki storage mavjud emas
+    }
+    renderAIChat();
+  }
+
+  async function saveAIHistory(){
+    try{
+      await window.storage.set(AI_STORAGE_KEY, JSON.stringify(aiHistory), false);
+    }catch(err){ /* saqlash muvaffaqiyatsiz bo'lsa ham suhbat shu sessiyada ishlayveradi */ }
+  }
+
+  async function clearAIHistory(){
+    aiHistory = [];
+    renderAIChat();
+    try{ await window.storage.delete(AI_STORAGE_KEY, false); }catch(err){}
+  }
+
+  function renderAIChat(){
+    const chat = document.getElementById('aiChat');
+    if(aiHistory.length === 0){
+      chat.innerHTML = '<div class="ai-empty">— hali suhbat yo\'q, savolingizni yozing —</div>';
+      return;
+    }
+    chat.innerHTML = aiHistory.map((m, idx) => {
+      if(m.role === 'user'){
+        return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
+      }
+      // assistant xabari
+      let inner = '';
+      if(m.clarify){
+        inner = `<div>${escapeHtml(m.clarify)}</div>`;
+      } else if(m.cmd){
+        inner = `<div>${escapeHtml(m.explain || '')}</div>
+          <div class="ai-cmd">${highlightCmd(m.cmd)}</div>`;
+        if(m.accepted){
+          inner += `<div class="accepted">✓ ro'yxatga qo'shildi</div>`;
+        } else {
+          inner += `<div class="ai-actions">
+            <button onclick="acceptAICmd(${idx})">Ro'yxatga qo'shish</button>
+          </div>`;
+        }
+      } else {
+        inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
+      }
+      return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
+    }).join('');
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function askAI(){
+    const input = document.getElementById('aiQuery');
+    const query = input.value.trim();
+    const askBtn = document.getElementById('aiAskBtn');
+    if(!query){ alert("Avval so'rovingizni yozing"); return; }
+
+    aiHistory.push({ role: 'user', text: query, time: Date.now() });
+    input.value = '';
+    renderAIChat();
+    askBtn.disabled = true;
+
+    const systemPrompt = "Sen brotherwatch CLI bo'yicha yordamchisan. Faqat quyidagi hujjatga (bw.md) "
+      + "asoslanib javob ber, hujjatda yo'q buyruq o'ylab topma:\n\n" + BW_DOC + "\n\n"
+      + "Foydalanuvchi tabiiy tilda (o'zbekcha) so'rov beradi. Suhbat tarixiga qarab (masalan avvalgi "
+      + "xabarda qaysi user haqida gap ketgani) kontekstni tushun. Sen ANIQ bitta terminal buyrug'ini "
+      + "tayyorlaysan. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
+      + "markdown belgisi qo'shma:\n"
+      + '{"command": "<to\'liq buyruq yoki bo\'sh satr>", "explain": "<qisqa o\'zbekcha izoh>", "clarify": "<agar noaniq bo\'lsa savol, aks holda bo\'sh satr>"}\n'
+      + "Agar so'rov noaniq bo'lsa (masalan qaysi user yoki necha daqiqa noma'lum), command'ni bo'sh "
+      + "qoldir va clarify maydoniga savol yoz. Buyruq har doim 'sudo' bilan boshlanishi va hujjatdagi "
+      + "sintaksisga to'liq mos bo'lishi shart.";
+
+    // Advanced: butun suhbat tarixini API'ga kontekst sifatida yuboramiz —
+    // shunda AI oldingi savol-javoblarni "eslab" javob beradi
+    const apiMessages = aiHistory.map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.role === 'user' ? m.text : (m.rawText || JSON.stringify({ command: m.cmd || '', explain: m.explain || '', clarify: m.clarify || '' }))
+    }));
+
+    try{
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: apiMessages
+        })
+      });
+      const data = await response.json();
+      const text = (data.content || [])
+        .map(b => b.type === 'text' ? b.text : '')
+        .join('')
+        .trim()
+        .replace(/^```json|```$/g, '')
+        .trim();
+      const parsed = JSON.parse(text);
+
+      const entry = { role: 'assistant', rawText: text, time: Date.now() };
+      if(parsed.clarify && parsed.clarify.trim()){
+        entry.clarify = parsed.clarify.trim();
+      } else if(parsed.command && parsed.command.trim()){
+        entry.cmd = parsed.command.trim();
+        entry.explain = parsed.explain || '';
+      } else {
+        entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
+      }
+      aiHistory.push(entry);
+    }catch(err){
+      aiHistory.push({ role: 'assistant', text: 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.', time: Date.now() });
+    }finally{
+      askBtn.disabled = false;
+      renderAIChat();
+      saveAIHistory();
+    }
+  }
+
+  function acceptAICmd(idx){
+    const m = aiHistory[idx];
+    if(!m || !m.cmd) return;
+    addCmd(m.cmd);
+    m.accepted = true;
+    renderAIChat();
+    saveAIHistory();
+  }
+
+  loadAIHistory();
   render();
 </script>
 </body>
