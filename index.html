@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>brotherwatch</title>
+<style>
+  :root{
+    --bg: #eaf5fc;
+    --panel: #ffffff;
+    --line: #cfe7f5;
+    --accent: #4fb3e8;
+    --accent-dark: #2e93c9;
+    --red: #e8746b;
+    --red-dark: #d95c53;
+    --text: #1f3b4d;
+    --text-dim: #6d8ba0;
+    --radius: 14px;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    padding: 24px 16px 60px;
+  }
+  .wrap{ max-width: 480px; margin: 0 auto; }
+  h1{ font-size: 22px; font-weight:700; margin-bottom: 4px; color:var(--accent-dark); }
+  .sub{ font-size:13px; color:var(--text-dim); margin-bottom:20px; }
+
+  /* USER SELECT */
+  select, input[type="text"], input[type="date"]{
+    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    font-size:15px; padding:12px 14px; border-radius:10px; outline:none;
+  }
+  select:focus, input:focus{ border-color:var(--accent); }
+  label{ display:block; font-size:13px; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
+
+  .row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .row input{ flex:1; }
+  .row .unit{ font-size:13px; color:var(--text-dim); white-space:nowrap; }
+
+  button{
+    background: var(--accent); color:#ffffff; border:none; font-weight:600;
+    font-size:14px; padding:12px 14px; border-radius:10px; cursor:pointer;
+    margin-top:10px; transition: background .15s ease, transform .1s ease;
+  }
+  button:hover{ background: var(--accent-dark); }
+  button:active{ transform: scale(.98); }
+  button.secondary{ background:var(--panel); color:var(--accent-dark); border:1px solid var(--line); }
+  button.secondary:hover{ background:#f2faff; }
+  button.danger{ background: var(--red); }
+  button.danger:hover{ background: var(--red-dark); }
+
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-top:16px; box-shadow: 0 1px 3px rgba(46,147,201,0.06);
+  }
+  .card h2{ font-size:14px; font-weight:700; color:var(--text); margin:0 0 2px; }
+  .card .desc{ font-size:12px; color:var(--text-dim); margin-bottom:4px; }
+
+  /* OUTPUT */
+  .out-box{
+    background:#0f2536; border:1px solid #1c3a4f; border-radius:var(--radius);
+    margin-top:24px; padding:14px; font-family: 'SF Mono', Consolas, monospace;
+    font-size:12.5px; max-height:300px; overflow-y:auto; scroll-behavior:smooth;
+  }
+  .out-line{
+    display:flex; gap:8px; padding:8px 0 14px; border-bottom:1px solid #1c3a4f;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; color:#dbeeff;
+    position:relative;
+  }
+  .out-line::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:2px;
+    background:var(--accent); border-radius:2px; transform:scaleX(0); transform-origin:left;
+    opacity:0; box-shadow: 0 0 6px var(--accent);
+  }
+  .out-line.flash::after{
+    opacity:1; transform:scaleX(1);
+    transition: transform .5s ease, opacity .5s ease .4s;
+  }
+  .out-line:last-child{ border-bottom:none; }
+  .out-line .left-group{
+    display:flex; align-items:center; gap:4px; flex-shrink:0;
+    position:sticky; left:0; background:#0f2536; padding-right:6px;
+  }
+  .out-line .left-group .num{ color:#7fd0ff; font-weight:700; }
+  .out-line span.txt{ white-space:pre; cursor:pointer; flex:1; }
+  .out-line .icon-group{
+    display:flex; gap:2px; flex-shrink:0;
+    position:sticky; right:0; background:#0f2536; padding-left:6px;
+  }
+  .out-line .icon-btn{
+    color:#7fa9c2; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:5px;
+  }
+  /* Amal tugmalari (expand/copy/o'chirish) standart holatda yashirin —
+     faqat qator ustiga hover qilinganda (yoki teginilganda) chiqadi */
+  .out-line .icon-btn.expand,
+  .out-line .icon-group{
+    opacity:0; transition:opacity .15s ease;
+  }
+  .out-line:hover .icon-btn.expand,
+  .out-line:hover .icon-group,
+  .out-line:active .icon-btn.expand,
+  .out-line:active .icon-group{
+    opacity:1;
+  }
+  .out-line .icon-btn:hover{ background:#1c3a4f; }
+  .out-line .icon-btn.copy:hover{ color:#7fd0ff; }
+  .out-line .icon-btn.del:hover{ color:var(--red); }
+
+  /* SQL-uslubidagi rangli tokenlar */
+  .tok-kw{ color:#82b1ff; font-weight:700; }
+  .tok-str{ color:#ffb072; }
+  .tok-num{ color:#7ee787; }
+  .tok-flag{ color:#d0a8ff; }
+  .tok-bin{ color:#6f8fa8; }
+  .out-empty{ color:#5f8296; font-size:13px; font-style:italic; }
+  .out-actions{ display:flex; gap:8px; margin-top:10px; }
+  .out-actions button{ flex:1; margin-top:0; }
+
+  /* Minimalist custom scrollbars — browser's default bar hidden everywhere in .out-box */
+  .out-box, .out-line{ scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+  .out-box::-webkit-scrollbar, .out-line::-webkit-scrollbar{ height:5px; width:5px; }
+  .out-box::-webkit-scrollbar-track, .out-line::-webkit-scrollbar-track{ background:transparent; }
+  .out-box::-webkit-scrollbar-thumb, .out-line::-webkit-scrollbar-thumb{
+    background:#1c3a4f; border-radius:4px;
+  }
+  .out-line:hover::-webkit-scrollbar-thumb, .out-line:active::-webkit-scrollbar-thumb{
+    background:var(--accent);
+  }
+
+  .hint{ font-size:12px; color:var(--text-dim); margin-top:6px; }
+
+  /* FULLSCREEN COMMAND VIEW */
+  .fs-overlay{
+    display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
+    z-index:100; align-items:center; justify-content:center; padding:20px;
+    backdrop-filter: blur(2px);
+  }
+  .fs-overlay.open{ display:flex; }
+  .fs-panel{
+    background:#0f2536; border:1px solid #1c3a4f; border-radius:16px;
+    width:100%; max-width:520px; max-height:80vh; display:flex; flex-direction:column;
+    overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.35);
+  }
+  /* Haqiqiy brauzer fullscreen rejimida — panel butun ekranni egallaydi */
+  .fs-overlay:fullscreen{ padding:0; background:#0f2536; }
+  .fs-overlay:fullscreen .fs-panel{
+    max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
+  }
+  .fs-overlay:-webkit-full-screen{ padding:0; background:#0f2536; }
+  .fs-overlay:-webkit-full-screen .fs-panel{
+    max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
+  }
+  .fs-head{
+    display:flex; align-items:center; gap:8px; padding:12px 14px;
+    border-bottom:1px solid #1c3a4f; flex-shrink:0;
+  }
+  .fs-title{ color:#7fd0ff; font-weight:700; font-family:'SF Mono', Consolas, monospace; font-size:13px; flex:1; }
+  .fs-body{
+    padding:16px; overflow:auto; color:#dbeeff; font-family:'SF Mono', Consolas, monospace;
+    font-size:14px; line-height:1.6; white-space:pre-wrap; word-break:break-all;
+  }
+  .fs-overlay:fullscreen .fs-body,
+  .fs-overlay:-webkit-full-screen .fs-body{
+    flex:1; display:flex; align-items:center; font-size:18px; padding:32px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>brotherwatch</h1>
+  <div class="sub">Ekran vaqtini boshqarish</div>
+
+  <label for="userSelect">Foydalanuvchi</label>
+  <select id="userSelect">
+    <option value="muhammad">muhammad</option>
+    <option value="komoliddin">komoliddin</option>
+    <option value="__custom">boshqa (yozish)...</option>
+  </select>
+  <input type="text" id="customUser" placeholder="username" maxlength="32" style="display:none; margin-top:8px;">
+
+  <button style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
+
+  <div class="card">
+    <h2>Vaqt qo'shish</h2>
+    <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
+    <div class="row">
+      <input type="text" id="addMin" value="60" inputmode="numeric">
+      <span class="unit">min</span>
+    </div>
+    <button style="width:100%" onclick="cmdAddTime()">Qo'shish</button>
+  </div>
+
+  <div class="card">
+    <h2>Kunlik limit</h2>
+    <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
+    <div class="row">
+      <input type="text" id="dailyMin" value="120" inputmode="numeric">
+      <span class="unit">min/kun</span>
+    </div>
+    <button style="width:100%" onclick="cmdSetDaily()">O'rnatish</button>
+  </div>
+
+  <div class="card">
+    <h2>Bir o'tirish va tanaffus</h2>
+    <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
+    <label>Bir o'tirish chegarasi</label>
+    <div class="row">
+      <input type="text" id="sessMin" value="40" inputmode="numeric">
+      <span class="unit">min</span>
+    </div>
+    <label>Tanaffus</label>
+    <div class="row">
+      <input type="text" id="cooldownMin" value="240" inputmode="numeric">
+      <span class="unit">min</span>
+    </div>
+    <button style="width:100%" onclick="cmdSetSession()">O'rnatish</button>
+  </div>
+
+  <div class="card">
+    <h2>Qulf</h2>
+    <div class="desc">Joriy qulfni ochish yoki kunni to'liq qayta boshlash.</div>
+    <button class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
+    <button class="danger" style="width:100%" onclick="cmdReset()">To'liq reset</button>
+  </div>
+
+  <div class="card">
+    <h2>Tarix</h2>
+    <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi.</div>
+    <div class="row">
+      <input type="text" id="histDays" value="14" inputmode="numeric">
+      <span class="unit">kun</span>
+    </div>
+    <button class="secondary" style="width:100%" onclick="cmdHistory()">Ko'rsatish</button>
+  </div>
+
+  <div class="card">
+    <h2>Yangi user qo'shish</h2>
+    <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
+    <div class="row">
+      <input type="text" id="newUserMin" value="120" inputmode="numeric">
+      <span class="unit">min/kun</span>
+    </div>
+    <button class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
+  </div>
+
+  <div class="card">
+    <h2>O'tgan kunni to'g'irlash</h2>
+    <div class="desc">Xato ketgan sanadagi vaqtni tuzatadi.</div>
+    <label>Sana</label>
+    <input type="date" id="editDate">
+    <label>To'g'ri qiymat</label>
+    <div class="row">
+      <input type="text" id="editMin" inputmode="numeric">
+      <span class="unit">min</span>
+    </div>
+    <button class="secondary" style="width:100%" onclick="cmdEditHistory()">To'g'irlash</button>
+  </div>
+
+  <div class="card">
+    <h2>Hammasi uchun</h2>
+    <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi.</div>
+    <button class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="out-box" id="outBox">
+    <div class="out-empty">— hali buyruq yo'q —</div>
+  </div>
+  <div class="out-actions">
+    <button class="secondary" onclick="clearList()">Tozalash</button>
+  </div>
+</div>
+
+<!-- FULLSCREEN COMMAND VIEW -->
+<div class="fs-overlay" id="fsOverlay" onclick="if(event.target===this) closeFullscreen()">
+  <div class="fs-panel">
+    <div class="fs-head">
+      <span class="fs-title" id="fsTitle">#</span>
+      <span class="icon-btn copy" id="fsCopyBtn" title="nusxa olish">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </span>
+      <span class="icon-btn del" onclick="closeFullscreen()" title="yopish">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </span>
+    </div>
+    <div class="fs-body" id="fsBody"></div>
+  </div>
+</div>
+
+<script>
+  const BIN = 'sudo /usr/local/bin/brotherwatch';
+  let commands = [];
+  let lastSession = '40';
+  let lastCooldown = '240';
+
+  const USERNAME_RE = /^[a-zA-Z0-9_-]{1,32}$/;
+  const NUMBER_RE = /^-?\d+(\.\d+)?$/;
+  const POSITIVE_NUMBER_RE = /^\d+(\.\d+)?$/;
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+  const userSelect = document.getElementById('userSelect');
+  const customUser = document.getElementById('customUser');
+
+  userSelect.addEventListener('change', () => {
+    if(userSelect.value === '__custom'){
+      customUser.style.display = 'block';
+      customUser.value = '';
+      customUser.focus();
+    } else {
+      customUser.style.display = 'none';
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    const d = document.getElementById('editDate');
+    d.value = today;
+    d.max = today;
+  });
+
+  function sanitizeUsername(u){
+    if(typeof u !== 'string') return null;
+    const t = u.trim();
+    return USERNAME_RE.test(t) ? t : null;
+  }
+  function sanitizeNumber(v, allowNegative){
+    if(typeof v !== 'string') return null;
+    const t = v.trim();
+    const re = allowNegative ? NUMBER_RE : POSITIVE_NUMBER_RE;
+    return re.test(t) ? t : null;
+  }
+  function sanitizeDate(v){
+    if(typeof v !== 'string') return null;
+    const t = v.trim();
+    if(!DATE_RE.test(t)) return null;
+    const dt = new Date(t + 'T00:00:00Z');
+    return (!isNaN(dt.getTime()) && dt.toISOString().slice(0,10) === t) ? t : null;
+  }
+
+  function currentUser(){
+    return userSelect.value === '__custom' ? customUser.value.trim() : userSelect.value;
+  }
+
+  function requireSafeUser(){
+    const raw = currentUser();
+    if(!raw){ alert("Avval userni tanla yoki yoz"); return null; }
+    const safe = sanitizeUsername(raw);
+    if(!safe){ alert("Username noto'g'ri: faqat harf, raqam, - va _ (max 32 belgi)"); return null; }
+    return safe;
+  }
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+
+  function addCmd(cmd){
+    if(commands.includes(cmd)) return;
+    commands.push(cmd);
+    const newIdx = commands.length - 1;
+    render();
+    highlightLine(newIdx);
+  }
+
+  function highlightLine(idx){
+    const box = document.getElementById('outBox');
+    const line = box.querySelector(`.out-line[data-line="${idx}"]`);
+    if(!line) return;
+    box.scrollTo({ top: 0, behavior: 'smooth' });
+    // keyingi frame'da qo'shamiz — shunda CSS animatsiya har safar qaytadan ishlaydi
+    requestAnimationFrame(() => {
+      line.classList.add('flash');
+      setTimeout(() => line.classList.remove('flash'), 900);
+    });
+  }
+
+  function render(){
+    const box = document.getElementById('outBox');
+    if(commands.length === 0){
+      box.innerHTML = '<div class="out-empty">— hali buyruq yo\'q —</div>';
+      return;
+    }
+    // eng oxirgi qo'shilgan buyruq eng tepada chiqadi
+    box.innerHTML = commands.map((c,i) => i).reverse().map(i => `
+      <div class="out-line" data-line="${i}">
+        <span class="left-group">
+          <span class="num">#${i+1}</span>
+          <span class="icon-btn expand" onclick="openFullscreen(${i})" title="to'liq ekran">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+          </span>
+        </span>
+        <span class="txt" data-idx="${i}" title="bosib nusxa olish">${highlightCmd(commands[i])}</span>
+        <span class="icon-group">
+          <span class="icon-btn copy" onclick="copyOne(${i})" title="nusxa olish">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </span>
+          <span class="icon-btn del" onclick="removeCmd(${i})" title="o'chirish">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          </span>
+        </span>
+      </div>
+    `).join('');
+    box.querySelectorAll('.txt').forEach(el => {
+      el.addEventListener('click', () => copyOne(parseInt(el.dataset.idx,10)));
+    });
+  }
+
+  function copyOne(i){
+    if(i < 0 || i >= commands.length) return;
+    navigator.clipboard.writeText(commands[i]);
+  }
+
+  // ===== FULLSCREEN VIEW =====
+  let fsIndex = null;
+
+  function openFullscreen(i){
+    if(i < 0 || i >= commands.length) return;
+    fsIndex = i;
+    document.getElementById('fsTitle').textContent = `#${i+1}`;
+    document.getElementById('fsBody').innerHTML = highlightCmd(commands[i]);
+    const overlay = document.getElementById('fsOverlay');
+    overlay.classList.add('open');
+    // Haqiqiy brauzer fullscreen rejimini so'raymiz — ba'zi muhitlarda
+    // (masalan cheklangan iframe) rad etilishi mumkin, shu sabab try/catch bilan
+    const req = overlay.requestFullscreen || overlay.webkitRequestFullscreen;
+    if(req){
+      try{
+        const p = req.call(overlay);
+        if(p && p.catch) p.catch(() => {}); // rad etilsa ham modal oddiy overlay sifatida ishlayveradi
+      }catch(err){ /* fullscreen mavjud emas — muammo qilmaymiz */ }
+    }
+  }
+
+  function closeFullscreen(){
+    const overlay = document.getElementById('fsOverlay');
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if(isFs){
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if(exit) exit.call(document).catch(() => {});
+    }
+    overlay.classList.remove('open');
+    fsIndex = null;
+  }
+
+  // Foydalanuvchi native Esc yoki brauzer tugmasi bilan fullscreen'dan chiqsa,
+  // modalni ham yopib qo'yamiz
+  document.addEventListener('fullscreenchange', () => {
+    if(!document.fullscreenElement) closeFullscreen();
+  });
+  document.addEventListener('webkitfullscreenchange', () => {
+    if(!document.webkitFullscreenElement) closeFullscreen();
+  });
+
+  document.getElementById('fsCopyBtn').addEventListener('click', () => {
+    if(fsIndex !== null) copyOne(fsIndex);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeFullscreen();
+  });
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Buyruq matnini SQL-uslubidagi rangli qismlarga bo'ladi: kalit so'zlar, satrlar,
+  // sonlar, flaglar va binary yo'l — har biri o'z rangida ko'rsatiladi.
+  const SQL_KEYWORDS = ['sudo','sqlite3','UPDATE','SET','WHERE','AND','DELETE','FROM','date'];
+
+  function highlightCmd(raw){
+    let s = escapeHtml(raw);
+    // 1) qo'shtirnoqdagi satrlar ('...')
+    s = s.replace(/'([^']*)'/g, `<span class="tok-str">'$1'</span>`);
+    // 2) sonlar (alohida so'z sifatida)
+    s = s.replace(/\b\d+(\.\d+)?\b/g, '<span class="tok-num">$&</span>');
+    // 3) SQL/shell kalit so'zlari
+    SQL_KEYWORDS.forEach(k => {
+      const re = new RegExp(`\\b${k}\\b`, 'g');
+      s = s.replace(re, `<span class="tok-kw">${k}</span>`);
+    });
+    // 4) --flag ko'rinishidagi parametrlar
+    s = s.replace(/(--[a-z-]+)/g, '<span class="tok-flag">$1</span>');
+    // 5) brotherwatch binary yo'li
+    s = s.replace(/(\/usr\/local\/bin\/brotherwatch)/g, '<span class="tok-bin">$1</span>');
+    return s;
+  }
+
+  function removeCmd(i){ commands.splice(i,1); render(); }
+  function clearList(){ commands = []; render(); }
+
+  // ===== COMMANDS =====
+  function cmdStatus(){
+    addCmd(`${BIN} status`);
+  }
+
+  function cmdAddTime(){
+    const u = requireSafeUser(); if(!u) return;
+    const m = sanitizeNumber(val('addMin'), true);
+    if(!m){ alert("Minut faqat son bo'lishi kerak (masalan: 60 yoki -30)"); return; }
+    addCmd(m.startsWith('-') ? `${BIN} add-time -- ${u} ${m}` : `${BIN} add-time ${u} ${m}`);
+  }
+
+  function cmdSetDaily(){
+    const u = requireSafeUser(); if(!u) return;
+    const m = sanitizeNumber(val('dailyMin'), false);
+    if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
+    addCmd(`${BIN} set-daily ${u} ${m}`);
+  }
+
+  function cmdSetSession(){
+    const u = requireSafeUser(); if(!u) return;
+    const s = sanitizeNumber(val('sessMin'), false);
+    const c = sanitizeNumber(val('cooldownMin'), false);
+    if(!s || !c){ alert("Session va cooldown faqat musbat son bo'lishi kerak"); return; }
+    lastSession = s; lastCooldown = c;
+    addCmd(`${BIN} set-session ${u} --session-min ${s} --cooldown-min ${c}`);
+  }
+
+  function cmdUnlock(){
+    const u = requireSafeUser(); if(!u) return;
+    addCmd(`${BIN} unlock ${u}`);
+  }
+
+  function cmdReset(){
+    const u = requireSafeUser(); if(!u) return;
+    addCmd(`${BIN} reset ${u}`);
+  }
+
+  function cmdHistory(){
+    const u = requireSafeUser(); if(!u) return;
+    const raw = val('histDays');
+    let d = '';
+    if(raw){
+      d = sanitizeNumber(raw, false);
+      if(!d){ alert("Kunlar soni faqat musbat butun son bo'lishi kerak"); return; }
+    }
+    addCmd(`${BIN} history ${u}${d ? ' --days ' + d : ''}`);
+  }
+
+  function cmdAddUser(){
+    const u = requireSafeUser(); if(!u) return;
+    const m = sanitizeNumber(val('newUserMin'), false);
+    if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
+    addCmd(`${BIN} add-user ${u} ${m}`);
+  }
+
+  function cmdEditHistory(){
+    const u = requireSafeUser(); if(!u) return;
+    const d = sanitizeDate(val('editDate'));
+    if(!d){ alert("Sana noto'g'ri formatda (YYYY-MM-DD)"); return; }
+    const m = sanitizeNumber(val('editMin'), false);
+    if(!m){ alert("Minut faqat musbat son bo'lishi kerak"); return; }
+    addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE daily_usage SET minutes_used = ${m} WHERE username = '${u}' AND date = '${d}';"`);
+  }
+
+  function cmdClearAll(){
+    addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
+  }
+
+  render();
+</script>
+</body>
+</html>
