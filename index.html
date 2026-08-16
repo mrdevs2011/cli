@@ -752,6 +752,11 @@ async function askAI(){
     return;
   }
 
+  const knownUsers = Array.from(userSelect.options)
+    .map(o => o.value)
+    .filter(v => v !== '__custom');
+  const selectedUser = currentUser();
+
   aiHistory.push({ role: 'user', text: query, time: Date.now() });
   input.value = '';
   renderAIChat();
@@ -759,6 +764,21 @@ async function askAI(){
 
   const systemPrompt = "Sen brotherwatch CLI bo'yicha yordamchisan. Faqat quyidagi hujjatga (bw.md) "
     + "asoslanib javob ber, hujjatda yo'q buyruq o'ylab topma:\n\n" + BW_DOC + "\n\n"
+    + "## Ma'lum userlar\n"
+    + "Tizimda ro'yxatdan o'tgan aniq username'lar: " + knownUsers.join(', ') + ".\n"
+    + "Hozir ekranda tanlangan user: " + (selectedUser || "(tanlanmagan)") + ".\n\n"
+    + "## Username'ni to'g'ri aniqlash qoidasi (MUHIM)\n"
+    + "Foydalanuvchi ismlarni o'zbek tilining kelishik/egalik qo'shimchalari bilan yozishi mumkin "
+    + "(masalan 'kamoliddinga' — bu 'kamoliddin' ismiga '-ga' jo'nalish kelishigi qo'shimchasi qo'shilgan, "
+    + "'-ga' username'ning bir qismi emas). Username'ni buyruqqa yozishdan oldin:\n"
+    + "1) So'zdan grammatik qo'shimchani kesib tashla (-ga, -ni, -da, -dan, -niki, -dek, -day va h.k.).\n"
+    + "2) Natijani yuqoridagi 'Ma'lum userlar' ro'yxati bilan solishtir — agar imlosi yaqin bo'lsa "
+    + "(masalan 'kamoliddin' va 'komoliddin' — bir harf farqi), RO'YXATDAGI TO'G'RI YOZILISHINI ishlat, "
+    + "foydalanuvchi noto'g'ri yozgan variantni saqlab qolma.\n"
+    + "3) Agar so'rovda umuman user ismi aytilmagan bo'lsa (masalan 'bugun 30 daqiqa qo'sh'), ekranda "
+    + "hozir tanlangan userdan foydalan.\n"
+    + "4) Faqat agar so'z ma'lum userlarning hech biriga o'xshamasa va aniq yangi ism bo'lsa, uni "
+    + "harf/raqam/-/_ dan iborat qilib (username uchun yaroqli holga) normalizatsiya qilib ishlat.\n\n"
     + "Foydalanuvchi tabiiy tilda (o'zbekcha) so'rov beradi. Suhbat tarixiga qarab (masalan avvalgi "
     + "xabarda qaysi user haqida gap ketgani) kontekstni tushun. Sen ANIQ bitta terminal buyrug'ini "
     + "tayyorlaysan. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
