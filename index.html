@@ -168,6 +168,7 @@ button.danger:hover{ background: var(--red-dark); }
 .ai-actions .accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding:8px 0; }
 .ai-loading{ color:var(--text-dim); font-size:13px; font-style:italic; }
 .ai-error{ color:var(--red); font-size:13px; }
+.ai-rate-note{ color:var(--text-dim); font-size:11.5px; margin-top:4px; }
 
 .key-status{ font-size:12px; margin-top:8px; font-weight:600; }
 .key-status.ok{ color:var(--accent-dark); }
@@ -352,6 +353,7 @@ button.danger:hover{ background: var(--red-dark); }
       <button type="button" style="width:100%" onclick="saveApiKey()">Saqlash</button>
     </div>
     <div class="hint">⚠️ Ogohlantirish: bu key brauzer kodida ochiq turadi. Har kim DevTools orqali ko'rishi mumkin. Faqat o'zing ishlatadigan shaxsiy sahifa uchun mos — public/ko'p odam kiradigan sahifaga qo'yma.</div>
+    <div class="hint">AI yordamchi 1 daqiqada maksimal 2 ta so'rovga cheklangan (client-side). Chegaraga yetsangiz, 60 soniya kutish talab qilinadi.</div>
   </div>
 </div>
 
@@ -398,7 +400,8 @@ button.danger:hover{ background: var(--red-dark); }
 </div>
 
 <!-- AI: tabiiy tilda so'rov, bw.md hujjatiga tayanib buyruq taklif qiladi.
-     Suhbat tarixi localStorage orqali saqlanadi va keyingi safar ochilganda tiklanadi. -->
+     Suhbat tarixi localStorage orqali saqlanadi va keyingi safar ochilganda tiklanadi.
+     Rate limit: 1 daqiqada maksimal 2 ta so'rov (client-side, pastga qarang). -->
 <div class="tab-panel" id="panelAI" style="display:none;">
   <div class="card">
     <div style="display:flex; align-items:center; justify-content:space-between;">
@@ -415,6 +418,7 @@ button.danger:hover{ background: var(--red-dark); }
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg>
       </button>
     </div>
+    <div class="ai-rate-note" id="aiRateNote"></div>
   </div>
 </div>
 
@@ -907,6 +911,57 @@ function renderAIChat(){
   chat.scrollTop = chat.scrollHeight;
 }
 
+/* ---------------------------------------------------------------------
+ * Client-side rate limit: AI yordamchiga 1 daqiqada maksimal 2 ta so'rov.
+ * So'rov vaqtlari xotirada (aiRequestTimestamps) saqlanadi. Chegaraga
+ * yetilganda so'rov yuborilmaydi va foydalanuvchiga necha soniya kutish
+ * kerakligi ko'rsatiladi (60s oyna ichida).
+ * ------------------------------------------------------------------- */
+const AI_RATE_LIMIT_MAX = 2;
+const AI_RATE_LIMIT_WINDOW_MS = 60000; // 60s
+let aiRequestTimestamps = [];
+let aiRateNoteTimer = null;
+
+function pruneAITimestamps(){
+  const now = Date.now();
+  aiRequestTimestamps = aiRequestTimestamps.filter(t => now - t < AI_RATE_LIMIT_WINDOW_MS);
+}
+function aiRateLimitStatus(){
+  pruneAITimestamps();
+  if(aiRequestTimestamps.length < AI_RATE_LIMIT_MAX){
+    return { allowed: true, waitMs: 0 };
+  }
+  const oldest = aiRequestTimestamps[0];
+  const waitMs = AI_RATE_LIMIT_WINDOW_MS - (Date.now() - oldest);
+  return { allowed: false, waitMs: Math.max(waitMs, 0) };
+}
+function updateAIRateNote(){
+  const note = document.getElementById('aiRateNote');
+  const askBtn = document.getElementById('aiAskBtn');
+  if(!note || !askBtn) return;
+  if(aiRateNoteTimer){ clearInterval(aiRateNoteTimer); aiRateNoteTimer = null; }
+  const status = aiRateLimitStatus();
+  if(status.allowed){
+    note.textContent = '';
+    askBtn.disabled = false;
+    return;
+  }
+  askBtn.disabled = true;
+  const tick = () => {
+    const s = aiRateLimitStatus();
+    if(s.allowed){
+      note.textContent = '';
+      askBtn.disabled = false;
+      if(aiRateNoteTimer){ clearInterval(aiRateNoteTimer); aiRateNoteTimer = null; }
+      return;
+    }
+    const secs = Math.ceil(s.waitMs / 1000);
+    note.textContent = `⏳ 1 daqiqada maksimal ${AI_RATE_LIMIT_MAX} ta so'rov. ${secs}s dan keyin qayta urinib ko'ring.`;
+  };
+  tick();
+  aiRateNoteTimer = setInterval(tick, 1000);
+}
+
 async function askAI(){
   const input = document.getElementById('aiQuery');
   const query = input.value.trim();
@@ -919,6 +974,15 @@ async function askAI(){
     switchTab('settings');
     return;
   }
+
+  // Rate limit tekshiruvi: 1 daqiqada 2 tadan ortiq so'rov yuborilmaydi.
+  const rl = aiRateLimitStatus();
+  if(!rl.allowed){
+    updateAIRateNote();
+    return;
+  }
+  aiRequestTimestamps.push(Date.now());
+  updateAIRateNote();
 
   const knownUsers = Array.from(userSelect.options)
     .map(o => o.value)
@@ -1025,9 +1089,9 @@ async function askAI(){
       parsed = JSON.parse(text);
     }catch(parseErr){
       aiHistory.push({ role: 'assistant', text: "AI formatga mos javob qaytarmadi (JSON emas). Xom javob: " + text.slice(0,300), time: Date.now() });
-      askBtn.disabled = false;
       renderAIChat();
       saveAIHistory();
+      updateAIRateNote();
       return;
     }
     const entry = { role: 'assistant', rawText: text, time: Date.now() };
@@ -1064,9 +1128,9 @@ async function askAI(){
   }catch(err){
     aiHistory.push({ role: 'assistant', text: 'Xatolik yuz berdi: ' + err.message, time: Date.now() });
   }finally{
-    askBtn.disabled = false;
     renderAIChat();
     saveAIHistory();
+    updateAIRateNote();
   }
 }
 
