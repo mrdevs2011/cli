@@ -173,6 +173,21 @@ button.danger:hover{ background: var(--red-dark); }
 .key-status.ok{ color:var(--accent-dark); }
 .key-status.missing{ color:var(--red); }
 
+.ai-chart-wrap{
+  background:#0f2536; border-radius:10px; padding:14px 10px 6px; margin-top:8px; margin-bottom:8px;
+}
+.ai-chart-title{ color:#7fd0ff; font-size:12px; font-weight:700; margin-bottom:10px; padding-left:4px; }
+.ai-chart-bars{ display:flex; align-items:flex-end; gap:6px; height:120px; padding:0 4px; }
+.ai-chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0; }
+.ai-chart-bar{
+  width:100%; max-width:28px; background:var(--accent); border-radius:4px 4px 0 0;
+  transition: height .4s ease; position:relative;
+}
+.ai-chart-bar.over{ background:var(--red); }
+.ai-chart-val{ color:#dbeeff; font-size:9px; margin-bottom:3px; white-space:nowrap; }
+.ai-chart-label{ color:#7fa9c2; font-size:9px; margin-top:6px; writing-mode:vertical-rl; text-orientation:mixed; max-height:52px; }
+.ai-chart-summary{ color:#a8c8dc; font-size:11.5px; padding:8px 4px 2px; border-top:1px solid #1c3a4f; margin-top:10px; }
+
 .ai-inputbar{
   display:flex; align-items:center; gap:8px; margin-top:14px;
   background:var(--panel); border:1px solid var(--line); border-radius:26px;
@@ -357,7 +372,7 @@ button.danger:hover{ background: var(--red-dark); }
       <h2 style="margin:0;">AI yordamchi</h2>
       <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
     </div>
-    <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Hech narsa avtomatik ishga tushmaydi.</div>
+    <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Terminaldan <code>history</code> natijasini shu yerga joylasang, AI uni grafik qilib chizadi. Hech narsa avtomatik ishga tushmaydi.</div>
     <div class="ai-chat" id="aiChat">
       <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
     </div>
@@ -750,6 +765,28 @@ function clearAIHistory(){
   try{ localStorage.removeItem(AI_HISTORY_STORAGE); }catch(err){}
 }
 
+function renderChartHtml(title, data, limit){
+  const maxVal = Math.max(...data.map(d => d.value), limit || 0, 1);
+  const avg = data.reduce((s,d) => s + d.value, 0) / data.length;
+  const cols = data.map(d => {
+    const pct = Math.max((d.value / maxVal) * 100, 2);
+    const over = limit > 0 && d.value > limit;
+    return `<div class="ai-chart-col">
+      <span class="ai-chart-val">${Math.round(d.value)}</span>
+      <div class="ai-chart-bar${over ? ' over' : ''}" style="height:${pct}%"></div>
+      <span class="ai-chart-label">${escapeHtml(d.label)}</span>
+    </div>`;
+  }).join('');
+  const limitLine = limit > 0
+    ? `Limit: ${limit} min/kun · O'rtacha: ${Math.round(avg)} min`
+    : `O'rtacha: ${Math.round(avg)} min · Eng yuqori: ${Math.round(Math.max(...data.map(d=>d.value)))} min`;
+  return `<div class="ai-chart-wrap">
+    <div class="ai-chart-title">${escapeHtml(title)}</div>
+    <div class="ai-chart-bars">${cols}</div>
+    <div class="ai-chart-summary">${escapeHtml(limitLine)}</div>
+  </div>`;
+}
+
 function renderAIChat(){
   const chat = document.getElementById('aiChat');
   if(aiHistory.length === 0){
@@ -761,7 +798,9 @@ function renderAIChat(){
       return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
     }
     let inner = '';
-    if(m.reply){
+    if(m.chartData){
+      inner = renderChartHtml(m.chartTitle, m.chartData, m.chartLimit);
+    } else if(m.reply){
       inner = `<div>${escapeHtml(m.reply)}</div>`;
     } else if(m.clarify){
       inner = `<div>${escapeHtml(m.clarify)}</div>`;
@@ -805,13 +844,20 @@ async function askAI(){
   askBtn.disabled = true;
 
   const systemPrompt = "Sen brotherwatch (ekran vaqti nazorati) tizimi bo'yicha yordamchisan. "
-    + "Ikki xil so'rovga javob berasan:\n"
+    + "Uch xil so'rovga javob berasan:\n"
     + "A) Foydalanuvchi brotherwatch buyrug'i kerak bo'lgan amal so'rasa (vaqt qo'shish, limit "
     + "o'zgartirish, unlock, reset, status, history va h.k.) — quyidagi hujjatga (bw.md, "
     + "https://github.com/mrdevs2011/cli/blob/main/bw.md dagi asl manba) QATIY asoslanib, hujjatda "
     + "yo'q buyruq o'ylab topmasdan, aniq bitta terminal buyrug'i tayyorlaysan.\n"
     + "B) Boshqa har qanday savol (tushuntirish, umumiy dasturlash savoli, xato nimada ekanini "
-    + "so'rash va h.k.) — oddiy erkin suhbat sifatida javob berasan, buyruq to'qib chiqarmaysan.\n\n"
+    + "so'rash va h.k.) — oddiy erkin suhbat sifatida javob berasan, buyruq to'qib chiqarmaysan.\n"
+    + "C) Foydalanuvchi 'history' buyrug'ining terminal chiqishini (sana va daqiqa qatorlari) yoki "
+    + "shunga o'xshash kunlik sarf ma'lumotini chatga joylasa (paste qilsa) — buni grafik sifatida "
+    + "ko'rsatish uchun har bir kun-qiymat juftligini chart_data massiviga ajratib berasan. Faqat "
+    + "foydalanuvchi aniq raqamli ma'lumot bergan holda shu turni ishlat — o'zing raqam to'qib chiqarma. "
+    + "Agar ma'lumotda kunlik limit ham ko'rsatilgan bo'lsa (masalan bw.md dagi set-daily orqali "
+    + "ma'lum bo'lsa yoki foydalanuvchi aytsa), limit qiymatini chart_limit'ga yoz — shundan oshgan "
+    + "kunlar grafikada qizil rangda ko'rsatiladi; bo'lmasa chart_limit'ni 0 qoldir.\n\n"
     + "## bw.md (asl hujjat)\n" + BW_DOC + "\n\n"
     + "## Ma'lum userlar\n"
     + "Tizimda ro'yxatdan o'tgan aniq username'lar: " + knownUsers.join(', ') + ".\n"
@@ -831,13 +877,17 @@ async function askAI(){
     + "Suhbat tarixiga qarab (masalan avvalgi xabarda qaysi user haqida gap ketgani) kontekstni "
     + "tushun. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
     + "markdown belgisi qo'shma:\n"
-    + '{"type": "command yoki chat", "command": "<A holati uchun to\'liq buyruq, aks holda bo\'sh satr>", '
+    + '{"type": "command yoki chat yoki chart", "command": "<A holati uchun to\'liq buyruq, aks holda bo\'sh satr>", '
     + '"explain": "<A holati uchun qisqa o\'zbekcha izoh>", '
     + '"clarify": "<A holatida so\'rov noaniq bo\'lsa savol, aks holda bo\'sh satr>", '
-    + '"reply": "<B holati uchun erkin o\'zbekcha javob, aks holda bo\'sh satr>"}\n'
+    + '"reply": "<B holati uchun erkin o\'zbekcha javob, aks holda bo\'sh satr>", '
+    + '"chart_title": "<C holati uchun qisqa sarlavha, masalan foydalanuvchi nomi + \'kunlik sarfi\'>", '
+    + '"chart_data": [{"label": "<kun, masalan 08-10 yoki Dush>", "value": <daqiqa, son>}], '
+    + '"chart_limit": <kunlik limit son, bo\'lmasa 0>}\n'
     + "A holatida: command har doim 'sudo' bilan boshlanishi va hujjatdagi sintaksisga to'liq mos "
     + "bo'lishi shart; agar user/miqdor noaniq bo'lsa command'ni bo'sh qoldirib clarify'ga savol yoz. "
-    + "B holatida: type='chat', command/explain/clarify bo'sh, javobni reply'ga yoz.";
+    + "B holatida: type='chat', command/explain/clarify/chart_data bo'sh, javobni reply'ga yoz. "
+    + "C holatida: type='chart', chart_data to'ldirilgan, boshqa maydonlar bo'sh qoldiriladi.";
 
   const apiMessages = aiHistory.map(m => ({
     role: m.role === 'user' ? 'user' : 'assistant',
@@ -883,7 +933,19 @@ async function askAI(){
       return;
     }
     const entry = { role: 'assistant', rawText: text, time: Date.now() };
-    if(parsed.type === 'chat' && parsed.reply && parsed.reply.trim()){
+    if(parsed.type === 'chart' && Array.isArray(parsed.chart_data) && parsed.chart_data.length > 0){
+      const clean = parsed.chart_data
+        .filter(d => d && typeof d.label === 'string' && Number.isFinite(Number(d.value)))
+        .map(d => ({ label: String(d.label).slice(0,12), value: Number(d.value) }))
+        .slice(0, 31);
+      if(clean.length > 0){
+        entry.chartTitle = (parsed.chart_title || "Kunlik sarf").toString().slice(0,60);
+        entry.chartData = clean;
+        entry.chartLimit = Number.isFinite(Number(parsed.chart_limit)) ? Number(parsed.chart_limit) : 0;
+      } else {
+        entry.text = "AI ma'lumotni grafik uchun to'g'ri ajratolmadi. Tarix chiqishini to'liqroq joylab ko'ring.";
+      }
+    } else if(parsed.type === 'chat' && parsed.reply && parsed.reply.trim()){
       entry.reply = parsed.reply.trim();
     } else if(parsed.clarify && parsed.clarify.trim()){
       entry.clarify = parsed.clarify.trim();
