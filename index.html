@@ -587,7 +587,7 @@ const KNOWN_CMD_PATTERNS = [
   /^sudo \/usr\/local\/bin\/brotherwatch unlock [a-zA-Z0-9_-]{1,32}$/,
   /^sudo \/usr\/local\/bin\/brotherwatch reset [a-zA-Z0-9_-]{1,32}$/,
   /^sudo \/usr\/local\/bin\/brotherwatch history [a-zA-Z0-9_-]{1,32}( --days \d+)?$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch add-user [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch add-user [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?( --session-min \d+)?( --cooldown-min \d+)?$/,
   /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE daily_usage SET minutes_used = \d+(\.\d+)? WHERE username = '[a-zA-Z0-9_-]{1,32}' AND date = '\d{4}-\d{2}-\d{2}';"$/,
   /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date\('now'\);"$/
 ];
@@ -714,8 +714,9 @@ const BW_DOC = [
 "history <username> [--days N]",
 "  Oxirgi N kunlik sarfni ko'rsatadi (standart 14).",
 "",
-"add-user <username> <minutes>",
-"  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan.",
+"add-user <username> <minutes> [--session-min N] [--cooldown-min N]",
+"  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan. --session-min (standart 45) va",
+"  --cooldown-min (standart 240) ixtiyoriy — ko'rsatilmasa standart qiymat ishlaydi.",
 "",
 "## Xavfli amallar (to'g'ridan-to'g'ri SQLite orqali)",
 "DB yo'li: /var/lib/brotherwatch/brotherwatch.db",
@@ -766,7 +767,9 @@ function renderAIChat(){
       return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
     }
     let inner = '';
-    if(m.clarify){
+    if(m.reply){
+      inner = `<div>${escapeHtml(m.reply)}</div>`;
+    } else if(m.clarify){
       inner = `<div>${escapeHtml(m.clarify)}</div>`;
     } else if(m.cmd && m.accepted){
       inner = `<div>${escapeHtml(m.explain || '')}</div>
@@ -807,12 +810,19 @@ async function askAI(){
   renderAIChat();
   askBtn.disabled = true;
 
-  const systemPrompt = "Sen brotherwatch CLI bo'yicha yordamchisan. Faqat quyidagi hujjatga (bw.md) "
-    + "asoslanib javob ber, hujjatda yo'q buyruq o'ylab topma:\n\n" + BW_DOC + "\n\n"
+  const systemPrompt = "Sen brotherwatch (ekran vaqti nazorati) tizimi bo'yicha yordamchisan. "
+    + "Ikki xil so'rovga javob berasan:\n"
+    + "A) Foydalanuvchi brotherwatch buyrug'i kerak bo'lgan amal so'rasa (vaqt qo'shish, limit "
+    + "o'zgartirish, unlock, reset, status, history va h.k.) — quyidagi hujjatga (bw.md, "
+    + "https://github.com/mrdevs2011/cli/blob/main/bw.md dagi asl manba) QATIY asoslanib, hujjatda "
+    + "yo'q buyruq o'ylab topmasdan, aniq bitta terminal buyrug'i tayyorlaysan.\n"
+    + "B) Boshqa har qanday savol (tushuntirish, umumiy dasturlash savoli, xato nimada ekanini "
+    + "so'rash va h.k.) — oddiy erkin suhbat sifatida javob berasan, buyruq to'qib chiqarmaysan.\n\n"
+    + "## bw.md (asl hujjat)\n" + BW_DOC + "\n\n"
     + "## Ma'lum userlar\n"
     + "Tizimda ro'yxatdan o'tgan aniq username'lar: " + knownUsers.join(', ') + ".\n"
     + "Hozir ekranda tanlangan user: " + (selectedUser || "(tanlanmagan)") + ".\n\n"
-    + "## Username'ni to'g'ri aniqlash qoidasi (MUHIM)\n"
+    + "## Username'ni to'g'ri aniqlash qoidasi (faqat A holati uchun, MUHIM)\n"
     + "Foydalanuvchi ismlarni o'zbek tilining kelishik/egalik qo'shimchalari bilan yozishi mumkin "
     + "(masalan 'kamoliddinga' — bu 'kamoliddin' ismiga '-ga' jo'nalish kelishigi qo'shimchasi qo'shilgan, "
     + "'-ga' username'ning bir qismi emas). Username'ni buyruqqa yozishdan oldin:\n"
@@ -824,14 +834,16 @@ async function askAI(){
     + "hozir tanlangan userdan foydalan.\n"
     + "4) Faqat agar so'z ma'lum userlarning hech biriga o'xshamasa va aniq yangi ism bo'lsa, uni "
     + "harf/raqam/-/_ dan iborat qilib (username uchun yaroqli holga) normalizatsiya qilib ishlat.\n\n"
-    + "Foydalanuvchi tabiiy tilda (o'zbekcha) so'rov beradi. Suhbat tarixiga qarab (masalan avvalgi "
-    + "xabarda qaysi user haqida gap ketgani) kontekstni tushun. Sen ANIQ bitta terminal buyrug'ini "
-    + "tayyorlaysan. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
+    + "Suhbat tarixiga qarab (masalan avvalgi xabarda qaysi user haqida gap ketgani) kontekstni "
+    + "tushun. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
     + "markdown belgisi qo'shma:\n"
-    + '{"command": "<to\'liq buyruq yoki bo\'sh satr>", "explain": "<qisqa o\'zbekcha izoh>", "clarify": "<agar noaniq bo\'lsa savol, aks holda bo\'sh satr>"}\n'
-    + "Agar so'rov noaniq bo'lsa (masalan qaysi user yoki necha daqiqa noma'lum), command'ni bo'sh "
-    + "qoldir va clarify maydoniga savol yoz. Buyruq har doim 'sudo' bilan boshlanishi va hujjatdagi "
-    + "sintaksisga to'liq mos bo'lishi shart.";
+    + '{"type": "command yoki chat", "command": "<A holati uchun to\'liq buyruq, aks holda bo\'sh satr>", '
+    + '"explain": "<A holati uchun qisqa o\'zbekcha izoh>", '
+    + '"clarify": "<A holatida so\'rov noaniq bo\'lsa savol, aks holda bo\'sh satr>", '
+    + '"reply": "<B holati uchun erkin o\'zbekcha javob, aks holda bo\'sh satr>"}\n'
+    + "A holatida: command har doim 'sudo' bilan boshlanishi va hujjatdagi sintaksisga to'liq mos "
+    + "bo'lishi shart; agar user/miqdor noaniq bo'lsa command'ni bo'sh qoldirib clarify'ga savol yoz. "
+    + "B holatida: type='chat', command/explain/clarify bo'sh, javobni reply'ga yoz.";
 
   const apiMessages = aiHistory.map(m => ({
     role: m.role === 'user' ? 'user' : 'assistant',
@@ -877,11 +889,18 @@ async function askAI(){
       return;
     }
     const entry = { role: 'assistant', rawText: text, time: Date.now() };
-    if(parsed.clarify && parsed.clarify.trim()){
+    if(parsed.type === 'chat' && parsed.reply && parsed.reply.trim()){
+      // Oddiy suhbat javobi — bu yerda hech qanday sudo/SQL buyruq YO'Q,
+      // shuning uchun whitelist tekshiruvi kerak emas. Xavfsizlik bu yo'lda buzilmaydi,
+      // chunki ro'yxatga (commands[]) faqat pastdagi 'command' shoxobchasi orqaligina yoziladi.
+      entry.reply = parsed.reply.trim();
+    } else if(parsed.clarify && parsed.clarify.trim()){
       entry.clarify = parsed.clarify.trim();
     } else if(parsed.command && parsed.command.trim()){
       entry.cmd = parsed.command.trim();
       entry.explain = parsed.explain || '';
+      // XAVFSIZLIK: bu yerga hech qachon tegma. LLM hallucination qilishi mumkin va bu
+      // 'sudo' + real SQLite UPDATE/DELETE buyruqlari — whitelist yagona qo'riqchi.
       if(isKnownCommand(entry.cmd)){
         const lineIdx = addCmd(entry.cmd);
         entry.lineNum = lineIdx + 1;
