@@ -75,6 +75,7 @@ select:focus, input:focus{ border-color:var(--accent); box-shadow: 0 0 0 3px var
 .tab-btn.active{ background:var(--accent); color:#ffffff; box-shadow:0 2px 6px rgba(59,147,209,.35); }
 .tab-panel .card:first-child{ margin-top:14px; }
 .tab-panel.hidden{ display:none; }
+.hidden{ display:none; }
 
 .row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
 .row input{ flex:1; }
@@ -398,6 +399,19 @@ button.danger:hover{ background: var(--red-dark); }
       <input type="text" id="newUserMin" value="120" inputmode="numeric">
       <span class="unit">min/kun</span>
     </div>
+    <div style="margin-top:10px; font-size:12.5px; color:var(--accent-dark); cursor:pointer; font-weight:600;" onclick="toggleAddUserAdv()" id="addUserAdvToggle">+ kengaytirilgan (session/cooldown)</div>
+    <div id="addUserAdvPanel" class="hidden">
+      <label>Session cap</label>
+      <div class="row">
+        <input type="text" id="newUserSess" value="45" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+      <label>Tanaffus</label>
+      <div class="row">
+        <input type="text" id="newUserCooldown" value="240" inputmode="numeric">
+        <span class="unit">min</span>
+      </div>
+    </div>
     <button type="button" class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
   </div>
 </div>
@@ -485,6 +499,8 @@ button.danger:hover{ background: var(--red-dark); }
 
 <script>
 const BIN = 'sudo /usr/local/bin/brotherwatch';
+const DEFAULT_SESS = 45;
+const DEFAULT_COOLDOWN = 240;
 
 const ICONS = {
   bot: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"></rect><circle cx="9" cy="14" r="1"></circle><circle cx="15" cy="14" r="1"></circle><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><path d="M2 14h2"></path><path d="M20 14h2"></path></svg>`,
@@ -740,11 +756,22 @@ function cmdHistory(){
   }
   addCmd(`${BIN} history ${u}${d ? ' --days ' + d : ''}`);
 }
+function toggleAddUserAdv(){
+  document.getElementById('addUserAdvPanel').classList.toggle('hidden');
+}
 function cmdAddUser(){
   const u = requireSafeUser(); if(!u) return;
   const m = sanitizeNumber(val('newUserMin'), false);
   if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
-  addCmd(`${BIN} add-user ${u} ${m}`);
+  const advOpen = !document.getElementById('addUserAdvPanel').classList.contains('hidden');
+  if(advOpen){
+    const s = sanitizeNumber(val('newUserSess'), false);
+    const c = sanitizeNumber(val('newUserCooldown'), false);
+    if(!s || !c){ alert("Session va cooldown faqat musbat son bo'lishi kerak"); return; }
+    addCmd(`${BIN} add-user ${u} ${m} --session-min ${s} --cooldown-min ${c}`);
+  } else {
+    addCmd(`${BIN} add-user ${u} ${m}`);
+  }
 }
 function cmdEditHistory(){
   const u = requireSafeUser(); if(!u) return;
@@ -1063,17 +1090,42 @@ function flowAddUser(){
 function flowAddUserStep2(_arg, username){
   userText(username);
   currentPrompt = { text: `${username} uchun kunlik limit qancha bo'lsin?`, buttons: [
-    { label: '60 min', onClick: `flowAddUserFinish('${username}', '60')` },
-    { label: '90 min', onClick: `flowAddUserFinish('${username}', '90')` },
-    { label: '120 min', onClick: `flowAddUserFinish('${username}', '120')` },
-    { label: '180 min', onClick: `flowAddUserFinish('${username}', '180')` },
-    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowAddUserFinish', '${username}', false)` }
+    { label: '60 min', onClick: `flowAddUserPickDefaults('${username}', '60')` },
+    { label: '90 min', onClick: `flowAddUserPickDefaults('${username}', '90')` },
+    { label: '120 min', onClick: `flowAddUserPickDefaults('${username}', '120')` },
+    { label: '180 min', onClick: `flowAddUserPickDefaults('${username}', '180')` },
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowAddUserPickDefaults', '${username}', false)` }
   ]};
   renderAIChat();
 }
-function flowAddUserFinish(username, m){
+function flowAddUserPickDefaults(username, m){
   userText(`${m} min/kun`);
-  finishCmd(`${BIN} add-user ${username} ${m}`, `Kuzatuvga "${username}" ni ${m} daqiqa/kun limit bilan qo'shadi.`);
+  const packed = `${username}|${m}`;
+  currentPrompt = { text: `Session cap / tanaffusni ham sozlaymizmi, yoki default (${DEFAULT_SESS}/${DEFAULT_COOLDOWN} min) bilan qoldiramizmi?`, buttons: [
+    { label: `Default (${DEFAULT_SESS}/${DEFAULT_COOLDOWN})`, onClick: `flowAddUserFinish('${packed}', '')` },
+    { icon: 'pencil', label: "O'zim sozlayman", onClick: `askCustomNumber('flowAddUserSess', '${packed}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowAddUserSess(packed, s){
+  userText(`session: ${s} min`);
+  askCustomNumber('flowAddUserCooldown', `${packed}|${s}`, false);
+}
+function flowAddUserCooldown(packed2, c){
+  userText(`tanaffus: ${c} min`);
+  const [username, m, s] = packed2.split('|');
+  flowAddUserFinish(`${username}|${m}`, `${s}|${c}`);
+}
+function flowAddUserFinish(packed, extra){
+  const [username, m] = packed.split('|');
+  let cmd = `${BIN} add-user ${username} ${m}`;
+  let explain = `Kuzatuvga "${username}" ni ${m} daqiqa/kun limit bilan qo'shadi.`;
+  if(extra){
+    const [s, c] = extra.split('|');
+    cmd += ` --session-min ${s} --cooldown-min ${c}`;
+    explain = `Kuzatuvga "${username}" ni ${m} daqiqa/kun, session=${s}min, tanaffus=${c}min bilan qo'shadi.`;
+  }
+  finishCmd(cmd, explain);
 }
 
 /* ---- edit-history (to'g'ridan-to'g'ri SQLite) ---- */
