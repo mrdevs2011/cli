@@ -185,6 +185,10 @@ button.danger:hover{ background: var(--red-dark); }
 }
 .ai-custom-row button:hover{ background:var(--accent-dark); }
 
+.tab-btn svg{ vertical-align:-2px; margin-right:3px; }
+.ai-btn svg, .accepted svg{ vertical-align:-2px; margin-right:4px; }
+.ai-bubble svg{ vertical-align:-2px; margin-right:5px; }
+
 .fs-overlay{
   display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
   z-index:100; align-items:center; justify-content:center; padding:20px;
@@ -237,13 +241,12 @@ button.danger:hover{ background: var(--red-dark); }
 <button type="button" class="tab-btn" id="tabBtnSettings" onclick="switchTab('settings')">Sozlamalar</button>
 <button type="button" class="tab-btn" id="tabBtnDanger" onclick="switchTab('danger')">Xavfli</button>
 <button type="button" class="tab-btn" id="tabBtnView" onclick="switchTab('view')">Ko'rish</button>
-<button type="button" class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">🤖 Bot</button>
+<button type="button" class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"></rect><circle cx="9" cy="14" r="1"></circle><circle cx="15" cy="14" r="1"></circle><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><path d="M2 14h2"></path><path d="M20 14h2"></path></svg> Bot</button>
 </div>
 
 <div class="tab-panel" id="panelQuick">
   <div class="card">
     <h2>Vaqt qo'shish</h2>
-    <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
     <div class="row">
       <input type="text" id="addMin" value="60" inputmode="numeric">
       <span class="unit">min</span>
@@ -252,7 +255,6 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
   <div class="card">
     <h2>Qulfni ochish</h2>
-    <div class="desc">Joriy cooldown/lockni hozir tozalaydi.</div>
     <button type="button" class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
   </div>
 </div>
@@ -260,7 +262,6 @@ button.danger:hover{ background: var(--red-dark); }
 <div class="tab-panel" id="panelSettings" style="display:none;">
   <div class="card">
     <h2>Kunlik limit</h2>
-    <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
     <div class="row">
       <input type="text" id="dailyMin" value="120" inputmode="numeric">
       <span class="unit">min/kun</span>
@@ -269,7 +270,6 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
   <div class="card">
     <h2>Bir o'tirish va tanaffus</h2>
-    <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
     <label>Bir o'tirish chegarasi</label>
     <div class="row">
       <input type="text" id="sessMin" value="40" inputmode="numeric">
@@ -284,7 +284,6 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
   <div class="card">
     <h2>Yangi user qo'shish</h2>
-    <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
     <div class="row">
       <input type="text" id="newUserMin" value="120" inputmode="numeric">
       <span class="unit">min/kun</span>
@@ -296,12 +295,10 @@ button.danger:hover{ background: var(--red-dark); }
 <div class="tab-panel" id="panelDanger" style="display:none;">
   <div class="card">
     <h2>To'liq reset</h2>
-    <div class="desc">Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.</div>
     <button type="button" class="danger" style="width:100%" onclick="cmdReset()">Reset qilish</button>
   </div>
   <div class="card">
     <h2>O'tgan kunni to'g'irlash</h2>
-    <div class="desc">Xato ketgan sanadagi vaqtni to'g'ridan-to'g'ri SQLite orqali tuzatadi.</div>
     <label>Sana</label>
     <input type="date" id="editDate">
     <label>To'g'ri qiymat</label>
@@ -313,7 +310,6 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
   <div class="card">
     <h2>Hammasi uchun</h2>
-    <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi. Bekor qilib bo'lmaydi.</div>
     <button type="button" class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
   </div>
 </div>
@@ -321,12 +317,10 @@ button.danger:hover{ background: var(--red-dark); }
 <div class="tab-panel" id="panelView" style="display:none;">
   <div class="card">
     <h2>Holat</h2>
-    <div class="desc">Barcha userlarning joriy holatini ko'rsatadi. Hech narsa o'zgarmaydi.</div>
     <button type="button" style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
   </div>
   <div class="card">
     <h2>Tarix</h2>
-    <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi. Hech narsa o'zgarmaydi.</div>
     <div class="row">
       <input type="text" id="histDays" value="14" inputmode="numeric">
       <span class="unit">kun</span>
@@ -345,7 +339,6 @@ button.danger:hover{ background: var(--red-dark); }
       <h2 style="margin:0;">Bot</h2>
       <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
     </div>
-    <div class="desc">Hech narsa yozish shart emas — pastdagi tugmalarni bosib boryapsan, oxirida tayyor buyruq/SQL chiqadi va avtomatik ro'yxatga qo'shiladi. Hech narsa o'zi ishga tushmaydi.</div>
     <div class="ai-chat" id="aiChat">
       <div class="ai-empty" id="aiEmpty">— yuklanmoqda —</div>
     </div>
@@ -379,6 +372,25 @@ button.danger:hover{ background: var(--red-dark); }
 
 <script>
 const BIN = 'sudo /usr/local/bin/brotherwatch';
+
+const ICONS = {
+  bot: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"></rect><circle cx="9" cy="14" r="1"></circle><circle cx="15" cy="14" r="1"></circle><path d="M12 8V4"></path><circle cx="12" cy="3" r="1"></circle><path d="M2 14h2"></path><path d="M20 14h2"></path></svg>`,
+  check: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>`,
+  x: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>`,
+  clock: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2"></path><path d="M9 1h6"></path></svg>`,
+  unlock: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8-1.5"></path></svg>`,
+  refresh: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg>`,
+  chart: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6"></rect><rect x="12" y="8" width="3" height="10"></rect><rect x="17" y="5" width="3" height="13"></rect></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M3 10h18"></path></svg>`,
+  settings: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
+  hourglass: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12"></path><path d="M6 22h12"></path><path d="M6 2c0 6 6 6 6 10s-6 4-6 10"></path><path d="M18 2c0 6-6 6-6 10s6 4 6 10"></path></svg>`,
+  plus: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>`,
+  wrench: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6L2 19l3 3 7.1-7.1a4 4 0 0 0 5.6-5.6l-2.5 2.5-2-2z"></path></svg>`,
+  trash: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>`,
+  pencil: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>`,
+  warning: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>`
+};
+
 let commands = [];
 let lastSession = '40';
 let lastCooldown = '240';
@@ -654,23 +666,23 @@ function renderAIChat(){
   } else {
     html = aiHistory.map(m => {
       if(m.role === 'user'){
-        return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
+        return `<div class="ai-msg user"><div class="ai-bubble">${m.icon ? ICONS[m.icon] : ''}${escapeHtml(m.text)}</div></div>`;
       }
       let inner = '';
       if(m.cmd){
         inner = `<div>${escapeHtml(m.explain || '')}</div>
           <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
-          <div class="accepted">✓ pastdagi ro'yxatga #${m.lineNum} qilib qo'shildi</div>`;
+          <div class="accepted">${ICONS.check} pastdagi ro'yxatga #${m.lineNum} qilib qo'shildi</div>`;
       } else {
-        inner = `<div>${escapeHtml(m.text || '')}</div>`;
+        inner = `<div>${m.icon ? ICONS[m.icon] : ''}${escapeHtml(m.text || '')}</div>`;
       }
       return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
     }).join('');
     if(currentPrompt){
-      let promptInner = `<div>${escapeHtml(currentPrompt.text)}</div>`;
+      let promptInner = `<div>${currentPrompt.icon ? ICONS[currentPrompt.icon] : ''}${escapeHtml(currentPrompt.text)}</div>`;
       if(currentPrompt.buttons){
         promptInner += `<div class="ai-btn-row">` + currentPrompt.buttons.map(b =>
-          `<button type="button" class="ai-btn" onclick="${b.onClick}">${escapeHtml(b.label)}</button>`
+          `<button type="button" class="ai-btn" onclick="${b.onClick}">${b.icon ? ICONS[b.icon] : ''}${escapeHtml(b.label)}</button>`
         ).join('') + `</div>`;
       }
       if(currentPrompt.customInput){
@@ -698,12 +710,12 @@ function renderAIChat(){
   chat.scrollTop = chat.scrollHeight;
 }
 
-function botLog(text){
-  aiHistory.push({ role: 'assistant', text, time: Date.now() });
+function botLog(text, icon){
+  aiHistory.push({ role: 'assistant', text, icon, time: Date.now() });
   saveAIHistory();
 }
-function userText(text){
-  aiHistory.push({ role: 'user', text, time: Date.now() });
+function userText(text, icon){
+  aiHistory.push({ role: 'user', text, icon, time: Date.now() });
   saveAIHistory();
 }
 function finishCmd(cmd, explain){
@@ -714,22 +726,23 @@ function finishCmd(cmd, explain){
 }
 
 const CATALOG_ROOT = [
-  { id: 'add-time',     label: "⏱ Vaqt qo'shish/ayirish" },
-  { id: 'unlock',       label: '🔓 Qulfni ochish' },
-  { id: 'reset',        label: '♻️ Kunni reset qilish' },
-  { id: 'status',       label: '📊 Holatni ko\'rish' },
-  { id: 'history',      label: '📅 Tarixni ko\'rish' },
-  { id: 'set-daily',    label: '⚙️ Kunlik limit' },
-  { id: 'set-session',  label: '⏳ Sessiya/tanaffus' },
-  { id: 'add-user',     label: '➕ Yangi user qo\'shish' },
-  { id: 'edit-history', label: "🛠 O'tgan kunni to'g'irlash" },
-  { id: 'clear-all',    label: '🧨 Hammasini tozalash' }
+  { id: 'add-time',     icon: 'clock',     label: "Vaqt qo'shish/ayirish" },
+  { id: 'unlock',       icon: 'unlock',    label: 'Qulfni ochish' },
+  { id: 'reset',        icon: 'refresh',   label: 'Kunni reset qilish' },
+  { id: 'status',       icon: 'chart',     label: "Holatni ko'rish" },
+  { id: 'history',      icon: 'calendar',  label: "Tarixni ko'rish" },
+  { id: 'set-daily',    icon: 'settings',  label: 'Kunlik limit' },
+  { id: 'set-session',  icon: 'hourglass', label: 'Sessiya/tanaffus' },
+  { id: 'add-user',     icon: 'plus',      label: "Yangi user qo'shish" },
+  { id: 'edit-history', icon: 'wrench',    label: "O'tgan kunni to'g'irlash" },
+  { id: 'clear-all',    icon: 'trash',     label: 'Hammasini tozalash' }
 ];
 
 function catalogReset(isContinue){
   currentPrompt = {
-    text: isContinue ? "✓ Bajarildi. Yana nima qilamiz?" : "Nima qilmoqchisiz?",
-    buttons: CATALOG_ROOT.map(c => ({ label: c.label, onClick: `catalogPick('${c.id}')` }))
+    icon: isContinue ? 'check' : null,
+    text: isContinue ? "Bajarildi. Yana nima qilamiz?" : "Nima qilmoqchisiz?",
+    buttons: CATALOG_ROOT.map(c => ({ icon: c.icon, label: c.label, onClick: `catalogPick('${c.id}')` }))
   };
   renderAIChat();
 }
@@ -742,7 +755,7 @@ function needUser(){
 
 function catalogPick(id){
   const item = CATALOG_ROOT.find(c => c.id === id);
-  userText(item.label);
+  userText(item.label, item.icon);
   ({
     'status':        flowStatus,
     'unlock':        flowUnlock,
@@ -812,13 +825,13 @@ function flowUnlock(){
 function flowReset(){
   const u = needUser(); if(!u) return;
   currentPrompt = { text: `${u} uchun kunlik hisobni to'liq to'ldirib, qulfni ochamizmi?`, buttons: [
-    { label: "✅ Ha", onClick: `flowResetConfirm('${u}')` },
-    { label: "❌ Bekor qilish", onClick: 'catalogReset(false)' }
+    { icon: 'check', label: "Ha", onClick: `flowResetConfirm('${u}')` },
+    { icon: 'x', label: "Bekor qilish", onClick: 'catalogReset(false)' }
   ]};
   renderAIChat();
 }
 function flowResetConfirm(u){
-  userText('✅ Ha');
+  userText('Ha', 'check');
   finishCmd(`${BIN} reset ${u}`, `${u} uchun kunlik hisobni to'liq to'ldiradi va qulfni ochadi.`);
 }
 
@@ -833,7 +846,7 @@ function flowAddTime(){
     { label: '-15', onClick: `flowAddTimePick('${u}', '-15')` },
     { label: '-30', onClick: `flowAddTimePick('${u}', '-30')` },
     { label: '-60', onClick: `flowAddTimePick('${u}', '-60')` },
-    { label: "✏️ Boshqa son", onClick: `askCustomNumber('flowAddTimePick', '${u}', true)` }
+    { icon: 'pencil', label: "Boshqa son", onClick: `askCustomNumber('flowAddTimePick', '${u}', true)` }
   ]};
   renderAIChat();
 }
@@ -850,7 +863,7 @@ function flowHistory(){
     { label: '7 kun', onClick: `flowHistoryPick('${u}', '7')` },
     { label: '14 kun', onClick: `flowHistoryPick('${u}', '14')` },
     { label: '30 kun', onClick: `flowHistoryPick('${u}', '30')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowHistoryPick', '${u}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowHistoryPick', '${u}', false)` }
   ]};
   renderAIChat();
 }
@@ -867,7 +880,7 @@ function flowSetDaily(){
     { label: '90 min', onClick: `flowSetDailyPick('${u}', '90')` },
     { label: '120 min', onClick: `flowSetDailyPick('${u}', '120')` },
     { label: '180 min', onClick: `flowSetDailyPick('${u}', '180')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetDailyPick', '${u}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowSetDailyPick', '${u}', false)` }
   ]};
   renderAIChat();
 }
@@ -884,7 +897,7 @@ function flowSetSession(){
     { label: '30 min', onClick: `flowSetSessionStep2('${u}', '30')` },
     { label: '40 min', onClick: `flowSetSessionStep2('${u}', '40')` },
     { label: '60 min', onClick: `flowSetSessionStep2('${u}', '60')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetSessionStep2', '${u}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowSetSessionStep2', '${u}', false)` }
   ]};
   renderAIChat();
 }
@@ -895,7 +908,7 @@ function flowSetSessionStep2(u, s){
     { label: '120 min', onClick: `flowSetSessionFinish('${u}|${s}', '120')` },
     { label: '240 min', onClick: `flowSetSessionFinish('${u}|${s}', '240')` },
     { label: '360 min', onClick: `flowSetSessionFinish('${u}|${s}', '360')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetSessionFinish', '${u}|${s}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowSetSessionFinish', '${u}|${s}', false)` }
   ]};
   renderAIChat();
 }
@@ -916,7 +929,7 @@ function flowAddUserStep2(_arg, username){
     { label: '90 min', onClick: `flowAddUserFinish('${username}', '90')` },
     { label: '120 min', onClick: `flowAddUserFinish('${username}', '120')` },
     { label: '180 min', onClick: `flowAddUserFinish('${username}', '180')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowAddUserFinish', '${username}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowAddUserFinish', '${username}', false)` }
   ]};
   renderAIChat();
 }
@@ -931,9 +944,9 @@ function flowEditHistory(){
   const today = new Date().toISOString().slice(0,10);
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
   currentPrompt = { text: `${u} uchun qaysi kunni to'g'irlaymiz?`, buttons: [
-    { label: '📅 Bugun', onClick: `flowEditHistoryStep2('${u}', '${today}')` },
-    { label: '📅 Kecha', onClick: `flowEditHistoryStep2('${u}', '${yesterday}')` },
-    { label: "✏️ Boshqa sana", onClick: `askCustomDate('flowEditHistoryStep2', '${u}')` }
+    { icon: 'calendar', label: 'Bugun', onClick: `flowEditHistoryStep2('${u}', '${today}')` },
+    { icon: 'calendar', label: 'Kecha', onClick: `flowEditHistoryStep2('${u}', '${yesterday}')` },
+    { icon: 'pencil', label: "Boshqa sana", onClick: `askCustomDate('flowEditHistoryStep2', '${u}')` }
   ]};
   renderAIChat();
 }
@@ -944,7 +957,7 @@ function flowEditHistoryStep2(u, d){
     { label: '30 min', onClick: `flowEditHistoryFinish('${u}|${d}', '30')` },
     { label: '60 min', onClick: `flowEditHistoryFinish('${u}|${d}', '60')` },
     { label: '120 min', onClick: `flowEditHistoryFinish('${u}|${d}', '120')` },
-    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowEditHistoryFinish', '${u}|${d}', false)` }
+    { icon: 'pencil', label: "Boshqa", onClick: `askCustomNumber('flowEditHistoryFinish', '${u}|${d}', false)` }
   ]};
   renderAIChat();
 }
@@ -959,14 +972,14 @@ function flowEditHistoryFinish(packed, m){
 
 /* ---- clear-all (qo'sh tasdiq) ---- */
 function flowClearAll(){
-  currentPrompt = { text: "⚠️ Bu BARCHA userlarning bugungi hisobini tozalaydi. Bekor qilib bo'lmaydi. Davom etamizmi?", buttons: [
-    { label: "✅ Ha, hammasini tozala", onClick: 'flowClearAllConfirm()' },
-    { label: "❌ Yo'q, bekor", onClick: 'catalogReset(false)' }
+  currentPrompt = { icon: 'warning', text: "Bu BARCHA userlarning bugungi hisobini tozalaydi. Bekor qilib bo'lmaydi. Davom etamizmi?", buttons: [
+    { icon: 'check', label: "Ha, hammasini tozala", onClick: 'flowClearAllConfirm()' },
+    { icon: 'x', label: "Yo'q, bekor", onClick: 'catalogReset(false)' }
   ]};
   renderAIChat();
 }
 function flowClearAllConfirm(){
-  userText("✅ Ha, hammasini tozala");
+  userText("Ha, hammasini tozala", 'check');
   finishCmd(
     `sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`,
     "Barcha userlarni bugun uchun boshidan boshlaydi."
