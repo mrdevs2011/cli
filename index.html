@@ -977,7 +977,11 @@ async function askAI(){
     + "B holatida: type='chat', command/explain/clarify/chart_data bo'sh, javobni reply'ga yoz. "
     + "C holatida: type='chart', chart_data to'ldirilgan, boshqa maydonlar bo'sh qoldiriladi.";
 
-  const apiMessages = aiHistory.map(m => ({
+  // Faqat oxirgi 6 ta almashinuvni (12 ta xabar) yuboramiz — aks holda suhbat uzayavergan
+  // sari (ayniqsa katta history/chart ma'lumotlari tufayli) so'rov hajmi Groq'ning
+  // tokens-per-minute limitidan (413 Request Too Large) oshib ketaveradi.
+  const MAX_HISTORY_MESSAGES = 12;
+  const apiMessages = aiHistory.slice(-MAX_HISTORY_MESSAGES).map(m => ({
     role: m.role === 'user' ? 'user' : 'assistant',
     content: m.role === 'user' ? m.text : (m.rawText || JSON.stringify({ command: m.cmd || '', explain: m.explain || '', clarify: m.clarify || '' }))
   }));
@@ -1001,6 +1005,12 @@ async function askAI(){
 
     if(!response.ok){
       const errBody = await response.text().catch(() => '');
+      if(response.status === 413){
+        throw new Error("So'rov juda katta bo'lib ketdi (Groq limiti: 8000 token/daqiqa). Sabab odatda uzun 'history' ma'lumotini joylashdir. Pastdagi \"Tozalash\" tugmasini bosib suhbatni tozalang, so'ng savolni qayta yozing.");
+      }
+      if(response.status === 429){
+        throw new Error("So'rovlar tez-tez yuborilyapti — Groq rate-limit qo'ydi. Bir necha soniya kutib qayta urinib ko'ring.");
+      }
       throw new Error(`HTTP ${response.status}: ${errBody.slice(0,200)}`);
     }
 
