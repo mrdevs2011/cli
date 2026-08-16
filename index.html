@@ -143,13 +143,23 @@ button.danger:hover{ background: var(--red-dark); }
   font-size:12px; color:var(--text-dim); cursor:pointer; text-decoration:underline;
 }
 .ai-clear:hover{ color:var(--red); }
+.ai-card{
+  display:flex; flex-direction:column; height:480px; padding-bottom:0;
+}
+.ai-card > div:first-child{ flex:none; }
 .ai-chat{
-  margin-top:12px; max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
+  margin-top:12px; flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
   scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
 }
 .ai-chat::-webkit-scrollbar{ width:5px; }
 .ai-chat::-webkit-scrollbar-track{ background:transparent; }
 .ai-chat::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
+.ai-prompt{
+  flex:none; border-top:1px solid var(--line); margin:0 -16px; padding:12px 16px 16px;
+  background:var(--panel); border-radius:0 0 var(--radius) var(--radius);
+}
+.ai-prompt:empty{ display:none; }
+.ai-prompt .ai-bubble{ background:#f2faff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.5; color:var(--text); }
 .ai-empty{ color:var(--text-dim); font-size:13px; font-style:italic; padding:6px 0; }
 .ai-msg{ display:flex; }
 .ai-msg.user{ justify-content:flex-end; }
@@ -258,7 +268,7 @@ button.danger:hover{ background: var(--red-dark); }
   }
   .tab-panel.hidden{ display:none; }
   .tab-panel .card{ margin-top:0; height:100%; }
-  #panelAI .card{ grid-column: 1 / -1; }
+  #panelAI .card{ grid-column: 1 / -1; height:560px; }
 
   .out-box{ margin-top:32px; max-height:380px; }
 }
@@ -379,7 +389,7 @@ button.danger:hover{ background: var(--red-dark); }
      buyruq/SQL generatsiya bo'lib pastdagi ro'yxatga qo'shiladi. Suhbat tarixi
      (yakunlangan amallar logi) localStorage orqali saqlanadi. -->
 <div class="tab-panel hidden" id="panelAI">
-  <div class="card">
+  <div class="card ai-card">
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <h2 style="margin:0;">Bot</h2>
       <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
@@ -387,6 +397,7 @@ button.danger:hover{ background: var(--red-dark); }
     <div class="ai-chat" id="aiChat">
       <div class="ai-empty" id="aiEmpty">— yuklanmoqda —</div>
     </div>
+    <div class="ai-prompt" id="aiPrompt"></div>
   </div>
 </div>
 
@@ -707,11 +718,13 @@ let currentPrompt = null;
 
 function renderAIChat(){
   const chat = document.getElementById('aiChat');
-  let html = '';
-  if(aiHistory.length === 0 && !currentPrompt){
-    html = '<div class="ai-empty">— yuklanmoqda —</div>';
+  const promptBox = document.getElementById('aiPrompt');
+
+  let historyHtml = '';
+  if(aiHistory.length === 0){
+    historyHtml = '<div class="ai-empty">— yuklanmoqda —</div>';
   } else {
-    html = aiHistory.map(m => {
+    historyHtml = aiHistory.map(m => {
       if(m.role === 'user'){
         return `<div class="ai-msg user"><div class="ai-bubble">${m.icon ? ICONS[m.icon] : ''}${escapeHtml(m.text)}</div></div>`;
       }
@@ -725,36 +738,39 @@ function renderAIChat(){
       }
       return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
     }).join('');
-    if(currentPrompt){
-      let promptInner = `<div>${currentPrompt.icon ? ICONS[currentPrompt.icon] : ''}${escapeHtml(currentPrompt.text)}</div>`;
-      if(currentPrompt.buttons){
-        promptInner += `<div class="ai-btn-row">` + currentPrompt.buttons.map(b =>
-          `<button type="button" class="ai-btn" onclick="${b.onClick}">${b.icon ? ICONS[b.icon] : ''}${escapeHtml(b.label)}</button>`
-        ).join('') + `</div>`;
-      }
-      if(currentPrompt.customInput){
-        promptInner += `<div class="ai-custom-row">
-          <input type="text" id="catalogCustomInput" inputmode="numeric" placeholder="${currentPrompt.customInput.allowNegative ? 'masalan: 45 yoki -20' : 'masalan: 45'}">
-          <button type="button" onclick="submitCustomNumber()">Yubor</button>
-        </div>`;
-      }
-      if(currentPrompt.customTextInput){
-        promptInner += `<div class="ai-custom-row">
-          <input type="text" id="catalogCustomText" maxlength="32" placeholder="username">
-          <button type="button" onclick="submitCustomText()">Yubor</button>
-        </div>`;
-      }
-      if(currentPrompt.customDateInput){
-        promptInner += `<div class="ai-custom-row">
-          <input type="date" id="catalogCustomDate" max="${currentPrompt.customDateInput.max}">
-          <button type="button" onclick="submitCustomDate()">Yubor</button>
-        </div>`;
-      }
-      html += `<div class="ai-msg assistant"><div class="ai-bubble">${promptInner}</div></div>`;
-    }
   }
-  chat.innerHTML = html;
+  chat.innerHTML = historyHtml;
   chat.scrollTop = chat.scrollHeight;
+
+  if(currentPrompt){
+    let promptInner = `<div>${currentPrompt.icon ? ICONS[currentPrompt.icon] : ''}${escapeHtml(currentPrompt.text)}</div>`;
+    if(currentPrompt.buttons){
+      promptInner += `<div class="ai-btn-row">` + currentPrompt.buttons.map(b =>
+        `<button type="button" class="ai-btn" onclick="${b.onClick}">${b.icon ? ICONS[b.icon] : ''}${escapeHtml(b.label)}</button>`
+      ).join('') + `</div>`;
+    }
+    if(currentPrompt.customInput){
+      promptInner += `<div class="ai-custom-row">
+        <input type="text" id="catalogCustomInput" inputmode="numeric" placeholder="${currentPrompt.customInput.allowNegative ? 'masalan: 45 yoki -20' : 'masalan: 45'}">
+        <button type="button" onclick="submitCustomNumber()">Yubor</button>
+      </div>`;
+    }
+    if(currentPrompt.customTextInput){
+      promptInner += `<div class="ai-custom-row">
+        <input type="text" id="catalogCustomText" maxlength="32" placeholder="username">
+        <button type="button" onclick="submitCustomText()">Yubor</button>
+      </div>`;
+    }
+    if(currentPrompt.customDateInput){
+      promptInner += `<div class="ai-custom-row">
+        <input type="date" id="catalogCustomDate" max="${currentPrompt.customDateInput.max}">
+        <button type="button" onclick="submitCustomDate()">Yubor</button>
+      </div>`;
+    }
+    promptBox.innerHTML = `<div class="ai-bubble">${promptInner}</div>`;
+  } else {
+    promptBox.innerHTML = '';
+  }
 }
 
 function botLog(text, icon){
