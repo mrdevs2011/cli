@@ -166,76 +166,24 @@ button.danger:hover{ background: var(--red-dark); }
 .ai-actions{ display:flex; gap:8px; }
 .ai-actions button{ flex:1; margin-top:0; padding:8px 10px; font-size:12.5px; }
 .ai-actions .accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding:8px 0; }
+.accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding-top:2px; }
 .ai-loading{ color:var(--text-dim); font-size:13px; font-style:italic; }
 .ai-error{ color:var(--red); font-size:13px; }
-.ai-rate-note{ color:var(--text-dim); font-size:11.5px; margin-top:4px; }
 
-.key-status{ font-size:12px; margin-top:8px; font-weight:600; }
-.key-status.ok{ color:var(--accent-dark); }
-.key-status.missing{ color:var(--red); }
-
-.key-list{ display:flex; flex-direction:column; gap:6px; margin-top:12px; }
-.key-empty{ font-size:12.5px; color:var(--text-dim); font-style:italic; padding:4px 0; }
-.key-row{
-  display:flex; align-items:center; gap:10px; background:#f2faff; border:1px solid var(--line);
-  border-radius:10px; padding:9px 10px;
+.ai-btn-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.ai-btn{
+  background:#ffffff; color:var(--accent-dark); border:1px solid var(--accent);
+  border-radius:16px; padding:7px 12px; font-size:12.5px; font-weight:600;
+  margin-top:0; cursor:pointer; transition: background .15s ease, color .15s ease;
 }
-.key-row input[type="checkbox"]{
-  width:18px; height:18px; flex-shrink:0; accent-color:var(--accent); cursor:pointer;
+.ai-btn:hover{ background:var(--accent); color:#ffffff; }
+.ai-custom-row{ display:flex; gap:6px; margin-top:10px; }
+.ai-custom-row input{ flex:1; padding:9px 10px; font-size:13px; }
+.ai-custom-row button{
+  margin-top:0; flex-shrink:0; background:var(--accent); color:#ffffff;
+  border:none; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer;
 }
-.key-row .key-mask{
-  flex:1; font-family:'SF Mono', Consolas, monospace; font-size:13px; color:var(--text);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.key-row .key-active-tag{ font-size:10px; font-weight:700; color:var(--accent-dark); flex-shrink:0; }
-.key-row .key-del{
-  flex-shrink:0; color:var(--text-dim); cursor:pointer; width:22px; height:22px;
-  display:flex; align-items:center; justify-content:center; border-radius:6px;
-}
-.key-row .key-del:hover{ background:#ffe4e1; color:var(--red); }
-.add-key-btn{
-  width:100%; background:var(--panel); color:var(--accent-dark); border:1px dashed var(--accent);
-  margin-top:10px;
-}
-.add-key-btn:hover{ background:#f2faff; }
-.add-key-form{ margin-top:10px; }
-
-.ai-chart-wrap{
-  background:#0f2536; border-radius:10px; padding:14px 10px 6px; margin-top:8px; margin-bottom:8px;
-}
-.ai-chart-title{ color:#7fd0ff; font-size:12px; font-weight:700; margin-bottom:10px; padding-left:4px; }
-.ai-chart-bars{ display:flex; align-items:flex-end; gap:6px; height:120px; padding:0 4px; }
-.ai-chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0; }
-.ai-chart-bar{
-  width:100%; max-width:28px; background:var(--accent); border-radius:4px 4px 0 0;
-  transition: height .4s ease; position:relative;
-}
-.ai-chart-bar.over{ background:var(--red); }
-.ai-chart-val{ color:#dbeeff; font-size:9px; margin-bottom:3px; white-space:nowrap; }
-.ai-chart-label{ color:#7fa9c2; font-size:9px; margin-top:6px; writing-mode:vertical-rl; text-orientation:mixed; max-height:52px; }
-.ai-chart-summary{ color:#a8c8dc; font-size:11.5px; padding:8px 4px 2px; border-top:1px solid #1c3a4f; margin-top:10px; }
-
-.ai-inputbar{
-  display:flex; align-items:flex-end; gap:8px; margin-top:14px;
-  background:var(--panel); border:1px solid var(--line); border-radius:22px;
-  padding:6px 6px 6px 16px; transition: border-radius .1s ease;
-}
-.ai-inputbar textarea{
-  border:none; background:transparent; flex:1; padding:8px 0; font-size:15px;
-  min-width:0; resize:none; font-family:inherit; color:var(--text);
-  line-height:20px; max-height:100px; overflow-y:auto; display:block;
-}
-.ai-inputbar textarea:focus{ outline:none; border:none; }
-.ai-inputbar textarea, .ai-inputbar textarea::-webkit-scrollbar{ scrollbar-width:thin; }
-.ai-inputbar textarea::-webkit-scrollbar{ width:4px; }
-.ai-inputbar textarea::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
-.ai-send-btn{
-  width:38px; height:38px; flex-shrink:0; border-radius:50%; padding:0; margin-top:0;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--accent); border:none; cursor:pointer;
-}
-.ai-send-btn:hover{ background:var(--accent-dark); }
-.ai-send-btn:disabled{ opacity:.5; cursor:not-allowed; background:var(--accent); }
+.ai-custom-row button:hover{ background:var(--accent-dark); }
 
 .fs-overlay{
   display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
@@ -289,7 +237,7 @@ button.danger:hover{ background: var(--red-dark); }
 <button type="button" class="tab-btn" id="tabBtnSettings" onclick="switchTab('settings')">Sozlamalar</button>
 <button type="button" class="tab-btn" id="tabBtnDanger" onclick="switchTab('danger')">Xavfli</button>
 <button type="button" class="tab-btn" id="tabBtnView" onclick="switchTab('view')">Ko'rish</button>
-<button type="button" class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">✦ AI</button>
+<button type="button" class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">🤖 Bot</button>
 </div>
 
 <div class="tab-panel" id="panelQuick">
@@ -343,18 +291,6 @@ button.danger:hover{ background: var(--red-dark); }
     </div>
     <button type="button" class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
   </div>
-  <div class="card">
-    <h2>Groq API key</h2>
-    <div class="desc">AI yordamchi belgilangan (faol) key orqali ishlaydi. Bir nechta key saqlab, kerakligini checkbox bilan tanlashing mumkin. Kalitlar faqat shu brauzerning localStorage'ida saqlanadi — hech qayerga yuborilmaydi, faqat to'g'ridan-to'g'ri Groq'ga.</div>
-    <div class="key-list" id="keyList"></div>
-    <button type="button" class="add-key-btn" id="addKeyBtn" onclick="toggleAddKeyForm()">+ Yangi key qo'shish</button>
-    <div class="add-key-form" id="addKeyForm" style="display:none;">
-      <input type="password" id="groqKeyInput" name="bw_groq_key_field" placeholder="gsk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other">
-      <button type="button" style="width:100%" onclick="saveApiKey()">Saqlash</button>
-    </div>
-    <div class="hint">⚠️ Ogohlantirish: bu key brauzer kodida ochiq turadi. Har kim DevTools orqali ko'rishi mumkin. Faqat o'zing ishlatadigan shaxsiy sahifa uchun mos — public/ko'p odam kiradigan sahifaga qo'yma.</div>
-    <div class="hint">AI yordamchi 1 daqiqada maksimal 2 ta so'rovga cheklangan (client-side). Chegaraga yetsangiz, 60 soniya kutish talab qilinadi.</div>
-  </div>
 </div>
 
 <div class="tab-panel" id="panelDanger" style="display:none;">
@@ -399,26 +335,20 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
 </div>
 
-<!-- AI: tabiiy tilda so'rov, bw.md hujjatiga tayanib buyruq taklif qiladi.
-     Suhbat tarixi localStorage orqali saqlanadi va keyingi safar ochilganda tiklanadi.
-     Rate limit: 1 daqiqada maksimal 2 ta so'rov (client-side, pastga qarang). -->
+<!-- AI: endi hech qanday tashqi so'rov/API key yo'q. Telegram-bot uslubidagi
+     katalog: bot savol beradi, tugmalar chiqadi, bosasan — oxirida tayyor
+     buyruq/SQL generatsiya bo'lib pastdagi ro'yxatga qo'shiladi. Suhbat tarixi
+     (yakunlangan amallar logi) localStorage orqali saqlanadi. -->
 <div class="tab-panel" id="panelAI" style="display:none;">
   <div class="card">
     <div style="display:flex; align-items:center; justify-content:space-between;">
-      <h2 style="margin:0;">AI yordamchi</h2>
+      <h2 style="margin:0;">Bot</h2>
       <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
     </div>
-    <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Terminaldan <code>history</code> natijasini shu yerga joylasang, AI uni grafik qilib chizadi. Hech narsa avtomatik ishga tushmaydi.</div>
+    <div class="desc">Hech narsa yozish shart emas — pastdagi tugmalarni bosib boryapsan, oxirida tayyor buyruq/SQL chiqadi va avtomatik ro'yxatga qo'shiladi. Hech narsa o'zi ishga tushmaydi.</div>
     <div class="ai-chat" id="aiChat">
-      <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
+      <div class="ai-empty" id="aiEmpty">— yuklanmoqda —</div>
     </div>
-    <div class="ai-inputbar">
-      <textarea id="aiQuery" rows="1" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh"></textarea>
-      <button type="button" class="ai-send-btn" id="aiAskBtn" onclick="askAI()" title="Yuborish">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg>
-      </button>
-    </div>
-    <div class="ai-rate-note" id="aiRateNote"></div>
   </div>
 </div>
 
@@ -629,22 +559,6 @@ function highlightCmd(raw){
   return s;
 }
 
-const KNOWN_CMD_PATTERNS = [
-  /^sudo \/usr\/local\/bin\/brotherwatch status$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch add-time( --)? [a-zA-Z0-9_-]{1,32} -?\d+(\.\d+)?$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch set-daily [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch set-session [a-zA-Z0-9_-]{1,32} --session-min \d+(\.\d+)? --cooldown-min \d+(\.\d+)?$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch unlock [a-zA-Z0-9_-]{1,32}$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch reset [a-zA-Z0-9_-]{1,32}$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch history [a-zA-Z0-9_-]{1,32}( --days \d+)?$/,
-  /^sudo \/usr\/local\/bin\/brotherwatch add-user [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?( --session-min \d+)?( --cooldown-min \d+)?$/,
-  /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE daily_usage SET minutes_used = \d+(\.\d+)? WHERE username = '[a-zA-Z0-9_-]{1,32}' AND date = '\d{4}-\d{2}-\d{2}';"$/,
-  /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date\('now'\);"$/
-];
-function isKnownCommand(cmd){
-  return KNOWN_CMD_PATTERNS.some(re => re.test(cmd));
-}
-
 function removeCmd(i){ commands.splice(i,1); render(); }
 function clearList(){ commands = []; render(); }
 
@@ -699,140 +613,6 @@ function cmdClearAll(){
   addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
 }
 
-const GROQ_KEY_STORAGE = 'bw_groq_api_key';       // eski, bitta-key format (migratsiya uchun)
-const GROQ_KEYS_STORAGE = 'bw_groq_api_keys';      // yangi, ko'p-key format
-let apiKeys = [];
-
-function loadApiKeys(){
-  try{
-    const raw = localStorage.getItem(GROQ_KEYS_STORAGE);
-    apiKeys = raw ? JSON.parse(raw) : [];
-  }catch(err){
-    apiKeys = [];
-  }
-  // Eski bitta-key formatdan migratsiya (birinchi marta ochilganda)
-  if(apiKeys.length === 0){
-    try{
-      const oldKey = localStorage.getItem(GROQ_KEY_STORAGE);
-      if(oldKey){
-        apiKeys = [{ id: 'm' + Date.now(), key: oldKey, active: true }];
-        saveApiKeysToStorage();
-        localStorage.removeItem(GROQ_KEY_STORAGE);
-      }
-    }catch(err){ /* muammo emas */ }
-  }
-}
-function saveApiKeysToStorage(){
-  try{
-    localStorage.setItem(GROQ_KEYS_STORAGE, JSON.stringify(apiKeys));
-    return true;
-  }catch(err){
-    console.error('[brotherwatch] saveApiKeysToStorage failed:', err);
-    return false;
-  }
-}
-function getApiKey(){
-  const active = apiKeys.find(k => k.active);
-  return active ? active.key : '';
-}
-function toggleAddKeyForm(){
-  const form = document.getElementById('addKeyForm');
-  const showing = form.style.display !== 'none';
-  form.style.display = showing ? 'none' : 'block';
-  if(!showing) document.getElementById('groqKeyInput').focus();
-}
-function saveApiKey(){
-  const input = document.getElementById('groqKeyInput');
-  const key = input.value.trim();
-  if(!key){ alert("Key kiritilmadi"); return; }
-  const entry = { id: 'k' + Date.now(), key: key, active: apiKeys.length === 0 };
-  apiKeys.push(entry);
-  if(!saveApiKeysToStorage()){
-    apiKeys.pop();
-    alert("localStorage ishlamayapti. Tekshir: Private/Incognito rejimda emasmisan? Brauzer sozlamalarida bu sayt uchun cookies/site-data bloklanmaganmi?");
-    return;
-  }
-  input.value = '';
-  document.getElementById('addKeyForm').style.display = 'none';
-  renderKeyList();
-}
-function setActiveKey(id){
-  apiKeys.forEach(k => { k.active = (k.id === id); });
-  saveApiKeysToStorage();
-  renderKeyList();
-}
-function deleteApiKey(id){
-  const wasActive = apiKeys.find(k => k.id === id && k.active);
-  apiKeys = apiKeys.filter(k => k.id !== id);
-  if(wasActive && apiKeys.length > 0){
-    apiKeys[0].active = true;
-  }
-  saveApiKeysToStorage();
-  renderKeyList();
-}
-function renderKeyList(){
-  const list = document.getElementById('keyList');
-  if(apiKeys.length === 0){
-    list.innerHTML = '<div class="key-empty">— hali key qo\'shilmagan, AI yordamchi ishlamaydi —</div>';
-    return;
-  }
-  list.innerHTML = apiKeys.map(k => `
-    <div class="key-row">
-      <input type="checkbox" ${k.active ? 'checked' : ''} onchange="setActiveKey('${k.id}')" title="faol qilish">
-      <span class="key-mask">...${escapeHtml(k.key.slice(-6))}</span>
-      ${k.active ? '<span class="key-active-tag">FAOL</span>' : ''}
-      <span class="key-del" onclick="deleteApiKey('${k.id}')" title="o'chirish">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-      </span>
-    </div>
-  `).join('');
-}
-
-const BW_DOC = [
-"# brotherwatch — ekran vaqtini boshqarish CLI",
-"Binary: sudo /usr/local/bin/brotherwatch",
-"",
-"## Buyruqlar",
-"status",
-"  Barcha userlarning holatini ko'rsatadi. Argumentsiz.",
-"",
-"add-time <username> <minutes>",
-"  Bugungi qolgan vaqtga daqiqa qo'shadi. Ayirish uchun manfiy son va -- ajratkichi kerak:",
-"  sudo /usr/local/bin/brotherwatch add-time -- <username> -30",
-"",
-"set-daily <username> <minutes>",
-"  Kunlik umumiy limitni o'zgartiradi (musbat butun son).",
-"",
-"set-session <username> --session-min <N> --cooldown-min <N>",
-"  Bir o'tirish chegarasi va tanaffus vaqtini o'rnatadi. Ikkalasi ham majburiy.",
-"",
-"unlock <username>",
-"  Joriy cooldown/lockni hozir tozalaydi.",
-"",
-"reset <username>",
-"  Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.",
-"",
-"history <username> [--days N]",
-"  Oxirgi N kunlik sarfni ko'rsatadi (standart 14).",
-"",
-"add-user <username> <minutes> [--session-min N] [--cooldown-min N]",
-"  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan. --session-min (standart 45) va",
-"  --cooldown-min (standart 240) ixtiyoriy — ko'rsatilmasa standart qiymat ishlaydi.",
-"",
-"## Xavfli amallar (to'g'ridan-to'g'ri SQLite orqali)",
-"DB yo'li: /var/lib/brotherwatch/brotherwatch.db",
-"Jadval daily_usage(username, date, minutes_used) — o'tgan kunni tuzatish uchun:",
-"  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE daily_usage SET minutes_used = <N> WHERE username = '<user>' AND date = '<YYYY-MM-DD>';\"",
-"Barcha userlarni bugun uchun tozalash:",
-"  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');\"",
-"",
-"## Qoidalar",
-"- Username: faqat harf, raqam, - va _ (max 32 belgi).",
-"- Har bir buyruq sudo bilan boshlanadi.",
-"- Sana formati doim YYYY-MM-DD.",
-"- Ma'lum userlar: muhammad, komoliddin — lekin boshqa username ham bo'lishi mumkin.",
-].join('\n');
-
 let aiHistory = [];
 const AI_HISTORY_STORAGE = 'bw_ai_chat_history';
 
@@ -852,310 +632,349 @@ function saveAIHistory(){
 function clearAIHistory(){
   if(aiHistory.length > 0 && !confirm("Butun suhbat tarixini o'chirasizmi? Bekor qilib bo'lmaydi.")) return;
   aiHistory = [];
-  renderAIChat();
   try{ localStorage.removeItem(AI_HISTORY_STORAGE); }catch(err){}
+  catalogReset(false);
 }
 
-function renderChartHtml(title, data, limit){
-  const maxVal = Math.max(...data.map(d => d.value), limit || 0, 1);
-  const avg = data.reduce((s,d) => s + d.value, 0) / data.length;
-  const cols = data.map(d => {
-    const pct = Math.max((d.value / maxVal) * 100, 2);
-    const over = limit > 0 && d.value > limit;
-    return `<div class="ai-chart-col">
-      <span class="ai-chart-val">${Math.round(d.value)}</span>
-      <div class="ai-chart-bar${over ? ' over' : ''}" style="height:${pct}%"></div>
-      <span class="ai-chart-label">${escapeHtml(d.label)}</span>
-    </div>`;
-  }).join('');
-  const limitLine = limit > 0
-    ? `Limit: ${limit} min/kun · O'rtacha: ${Math.round(avg)} min`
-    : `O'rtacha: ${Math.round(avg)} min · Eng yuqori: ${Math.round(Math.max(...data.map(d=>d.value)))} min`;
-  return `<div class="ai-chart-wrap">
-    <div class="ai-chart-title">${escapeHtml(title)}</div>
-    <div class="ai-chart-bars">${cols}</div>
-    <div class="ai-chart-summary">${escapeHtml(limitLine)}</div>
-  </div>`;
-}
+/* =======================================================================
+ * KATALOG (Telegram-bot uslubidagi) yordamchi.
+ * Hech qanday tashqi so'rov/API yo'q — hammasi lokal state machine.
+ * aiHistory faqat YAKUNLANGAN almashinuvlarni saqlaydi (log sifatida,
+ * localStorage orqali). Joriy savol/tugmalar currentPrompt'da turadi va
+ * saqlanmaydi — sahifa qayta ochilganda bosh menyudan boshlanadi (xuddi
+ * tg botda /start bosgandek).
+ * ---------------------------------------------------------------------*/
+let currentPrompt = null;
 
 function renderAIChat(){
   const chat = document.getElementById('aiChat');
-  if(aiHistory.length === 0){
-    chat.innerHTML = '<div class="ai-empty">— hali suhbat yo\'q, savolingizni yozing —</div>';
-    return;
+  let html = '';
+  if(aiHistory.length === 0 && !currentPrompt){
+    html = '<div class="ai-empty">— yuklanmoqda —</div>';
+  } else {
+    html = aiHistory.map(m => {
+      if(m.role === 'user'){
+        return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
+      }
+      let inner = '';
+      if(m.cmd){
+        inner = `<div>${escapeHtml(m.explain || '')}</div>
+          <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
+          <div class="accepted">✓ pastdagi ro'yxatga #${m.lineNum} qilib qo'shildi</div>`;
+      } else {
+        inner = `<div>${escapeHtml(m.text || '')}</div>`;
+      }
+      return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
+    }).join('');
+    if(currentPrompt){
+      let promptInner = `<div>${escapeHtml(currentPrompt.text)}</div>`;
+      if(currentPrompt.buttons){
+        promptInner += `<div class="ai-btn-row">` + currentPrompt.buttons.map(b =>
+          `<button type="button" class="ai-btn" onclick="${b.onClick}">${escapeHtml(b.label)}</button>`
+        ).join('') + `</div>`;
+      }
+      if(currentPrompt.customInput){
+        promptInner += `<div class="ai-custom-row">
+          <input type="text" id="catalogCustomInput" inputmode="numeric" placeholder="${currentPrompt.customInput.allowNegative ? 'masalan: 45 yoki -20' : 'masalan: 45'}">
+          <button type="button" onclick="submitCustomNumber()">Yubor</button>
+        </div>`;
+      }
+      if(currentPrompt.customTextInput){
+        promptInner += `<div class="ai-custom-row">
+          <input type="text" id="catalogCustomText" maxlength="32" placeholder="username">
+          <button type="button" onclick="submitCustomText()">Yubor</button>
+        </div>`;
+      }
+      if(currentPrompt.customDateInput){
+        promptInner += `<div class="ai-custom-row">
+          <input type="date" id="catalogCustomDate" max="${currentPrompt.customDateInput.max}">
+          <button type="button" onclick="submitCustomDate()">Yubor</button>
+        </div>`;
+      }
+      html += `<div class="ai-msg assistant"><div class="ai-bubble">${promptInner}</div></div>`;
+    }
   }
-  chat.innerHTML = aiHistory.map((m, idx) => {
-    if(m.role === 'user'){
-      return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
-    }
-    let inner = '';
-    if(m.chartData){
-      inner = renderChartHtml(m.chartTitle, m.chartData, m.chartLimit);
-    } else if(m.reply){
-      inner = `<div>${escapeHtml(m.reply)}</div>`;
-    } else if(m.clarify){
-      inner = `<div>${escapeHtml(m.clarify)}</div>`;
-    } else if(m.cmd && m.accepted){
-      inner = `<div>${escapeHtml(m.explain || '')}</div>
-        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
-        <div class="accepted">✓ men buni pastdagi ro'yxatga #${m.lineNum} qilib chiqarib qo'ydim</div>`;
-    } else if(m.cmd && !m.accepted){
-      inner = `<div>${escapeHtml(m.explain || '')}</div>
-        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
-        <div class="ai-error">⚠️ bu buyruq hujjatdagi (bw.md) standart shaklga to'liq mos kelmayapti — xavfsizlik uchun avtomatik qo'shilmadi. O'zing tekshirib, to'g'ri bo'lsa qo'lda yoz yoki so'rovni aniqroq qayta yoz.</div>`;
-    } else {
-      inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
-    }
-    return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
-  }).join('');
+  chat.innerHTML = html;
   chat.scrollTop = chat.scrollHeight;
 }
 
-/* ---------------------------------------------------------------------
- * Client-side rate limit: AI yordamchiga 1 daqiqada maksimal 2 ta so'rov.
- * So'rov vaqtlari xotirada (aiRequestTimestamps) saqlanadi. Chegaraga
- * yetilganda so'rov yuborilmaydi va foydalanuvchiga necha soniya kutish
- * kerakligi ko'rsatiladi (60s oyna ichida).
- * ------------------------------------------------------------------- */
-const AI_RATE_LIMIT_MAX = 2;
-const AI_RATE_LIMIT_WINDOW_MS = 60000; // 60s
-let aiRequestTimestamps = [];
-let aiRateNoteTimer = null;
+function botLog(text){
+  aiHistory.push({ role: 'assistant', text, time: Date.now() });
+  saveAIHistory();
+}
+function userText(text){
+  aiHistory.push({ role: 'user', text, time: Date.now() });
+  saveAIHistory();
+}
+function finishCmd(cmd, explain){
+  const idx = addCmd(cmd);
+  aiHistory.push({ role: 'assistant', cmd, explain, lineNum: idx + 1, time: Date.now() });
+  saveAIHistory();
+  catalogReset(true);
+}
 
-function pruneAITimestamps(){
-  const now = Date.now();
-  aiRequestTimestamps = aiRequestTimestamps.filter(t => now - t < AI_RATE_LIMIT_WINDOW_MS);
-}
-function aiRateLimitStatus(){
-  pruneAITimestamps();
-  if(aiRequestTimestamps.length < AI_RATE_LIMIT_MAX){
-    return { allowed: true, waitMs: 0 };
-  }
-  const oldest = aiRequestTimestamps[0];
-  const waitMs = AI_RATE_LIMIT_WINDOW_MS - (Date.now() - oldest);
-  return { allowed: false, waitMs: Math.max(waitMs, 0) };
-}
-function updateAIRateNote(){
-  const note = document.getElementById('aiRateNote');
-  const askBtn = document.getElementById('aiAskBtn');
-  if(!note || !askBtn) return;
-  if(aiRateNoteTimer){ clearInterval(aiRateNoteTimer); aiRateNoteTimer = null; }
-  const status = aiRateLimitStatus();
-  if(status.allowed){
-    note.textContent = '';
-    askBtn.disabled = false;
-    return;
-  }
-  askBtn.disabled = true;
-  const tick = () => {
-    const s = aiRateLimitStatus();
-    if(s.allowed){
-      note.textContent = '';
-      askBtn.disabled = false;
-      if(aiRateNoteTimer){ clearInterval(aiRateNoteTimer); aiRateNoteTimer = null; }
-      return;
-    }
-    const secs = Math.ceil(s.waitMs / 1000);
-    note.textContent = `⏳ 1 daqiqada maksimal ${AI_RATE_LIMIT_MAX} ta so'rov. ${secs}s dan keyin qayta urinib ko'ring.`;
+const CATALOG_ROOT = [
+  { id: 'add-time',     label: "⏱ Vaqt qo'shish/ayirish" },
+  { id: 'unlock',       label: '🔓 Qulfni ochish' },
+  { id: 'reset',        label: '♻️ Kunni reset qilish' },
+  { id: 'status',       label: '📊 Holatni ko\'rish' },
+  { id: 'history',      label: '📅 Tarixni ko\'rish' },
+  { id: 'set-daily',    label: '⚙️ Kunlik limit' },
+  { id: 'set-session',  label: '⏳ Sessiya/tanaffus' },
+  { id: 'add-user',     label: '➕ Yangi user qo\'shish' },
+  { id: 'edit-history', label: "🛠 O'tgan kunni to'g'irlash" },
+  { id: 'clear-all',    label: '🧨 Hammasini tozalash' }
+];
+
+function catalogReset(isContinue){
+  currentPrompt = {
+    text: isContinue ? "✓ Bajarildi. Yana nima qilamiz?" : "Nima qilmoqchisiz?",
+    buttons: CATALOG_ROOT.map(c => ({ label: c.label, onClick: `catalogPick('${c.id}')` }))
   };
-  tick();
-  aiRateNoteTimer = setInterval(tick, 1000);
-}
-
-async function askAI(){
-  const input = document.getElementById('aiQuery');
-  const query = input.value.trim();
-  const askBtn = document.getElementById('aiAskBtn');
-  if(!query){ alert("Avval so'rovingizni yozing"); return; }
-
-  const apiKey = getApiKey();
-  if(!apiKey){
-    alert("Avval Sozlamalar tabida Groq API key kiriting va saqlang");
-    switchTab('settings');
-    return;
-  }
-
-  // Rate limit tekshiruvi: 1 daqiqada 2 tadan ortiq so'rov yuborilmaydi.
-  const rl = aiRateLimitStatus();
-  if(!rl.allowed){
-    updateAIRateNote();
-    return;
-  }
-  aiRequestTimestamps.push(Date.now());
-  updateAIRateNote();
-
-  const knownUsers = Array.from(userSelect.options)
-    .map(o => o.value)
-    .filter(v => v !== '__custom');
-  const selectedUser = currentUser();
-
-  aiHistory.push({ role: 'user', text: query, time: Date.now() });
-  input.value = '';
-  autoResizeAI();
   renderAIChat();
-  askBtn.disabled = true;
-
-  const systemPrompt = "Sen brotherwatch (ekran vaqti nazorati) tizimi bo'yicha yordamchisan. "
-    + "Uch xil so'rovga javob berasan:\n"
-    + "A) Foydalanuvchi brotherwatch buyrug'i kerak bo'lgan amal so'rasa (vaqt qo'shish, limit "
-    + "o'zgartirish, unlock, reset, status, history va h.k.) — quyidagi hujjatga (bw.md, "
-    + "https://github.com/mrdevs2011/cli/blob/main/bw.md dagi asl manba) QATIY asoslanib, hujjatda "
-    + "yo'q buyruq o'ylab topmasdan, aniq bitta terminal buyrug'i tayyorlaysan.\n"
-    + "B) Boshqa har qanday savol (tushuntirish, umumiy dasturlash savoli, xato nimada ekanini "
-    + "so'rash va h.k.) — oddiy erkin suhbat sifatida javob berasan, buyruq to'qib chiqarmaysan.\n"
-    + "C) Foydalanuvchi 'history' buyrug'ining terminal chiqishini (sana va daqiqa qatorlari) yoki "
-    + "shunga o'xshash kunlik sarf ma'lumotini chatga joylasa (paste qilsa) — buni grafik sifatida "
-    + "ko'rsatish uchun har bir kun-qiymat juftligini chart_data massiviga ajratib berasan. Faqat "
-    + "foydalanuvchi aniq raqamli ma'lumot bergan holda shu turni ishlat — o'zing raqam to'qib chiqarma. "
-    + "Agar ma'lumotda kunlik limit ham ko'rsatilgan bo'lsa (masalan bw.md dagi set-daily orqali "
-    + "ma'lum bo'lsa yoki foydalanuvchi aytsa), limit qiymatini chart_limit'ga yoz — shundan oshgan "
-    + "kunlar grafikada qizil rangda ko'rsatiladi; bo'lmasa chart_limit'ni 0 qoldir.\n\n"
-    + "## bw.md (asl hujjat)\n" + BW_DOC + "\n\n"
-    + "## Ma'lum userlar\n"
-    + "Tizimda ro'yxatdan o'tgan aniq username'lar: " + knownUsers.join(', ') + ".\n"
-    + "Hozir ekranda tanlangan user: " + (selectedUser || "(tanlanmagan)") + ".\n\n"
-    + "## Username'ni to'g'ri aniqlash qoidasi (faqat A holati uchun, MUHIM)\n"
-    + "Foydalanuvchi ismlarni o'zbek tilining kelishik/egalik qo'shimchalari bilan yozishi mumkin "
-    + "(masalan 'kamoliddinga' — bu 'kamoliddin' ismiga '-ga' jo'nalish kelishigi qo'shimchasi qo'shilgan, "
-    + "'-ga' username'ning bir qismi emas). Username'ni buyruqqa yozishdan oldin:\n"
-    + "1) So'zdan grammatik qo'shimchani kesib tashla (-ga, -ni, -da, -dan, -niki, -dek, -day va h.k.).\n"
-    + "2) Natijani yuqoridagi 'Ma'lum userlar' ro'yxati bilan solishtir — agar imlosi yaqin bo'lsa "
-    + "(masalan 'kamoliddin' va 'komoliddin' — bir harf farqi), RO'YXATDAGI TO'G'RI YOZILISHINI ishlat, "
-    + "foydalanuvchi noto'g'ri yozgan variantni saqlab qolma.\n"
-    + "3) Agar so'rovda umuman user ismi aytilmagan bo'lsa (masalan 'bugun 30 daqiqa qo'sh'), ekranda "
-    + "hozir tanlangan userdan foydalan.\n"
-    + "4) Faqat agar so'z ma'lum userlarning hech biriga o'xshamasa va aniq yangi ism bo'lsa, uni "
-    + "harf/raqam/-/_ dan iborat qilib (username uchun yaroqli holga) normalizatsiya qilib ishlat.\n\n"
-    + "Suhbat tarixiga qarab (masalan avvalgi xabarda qaysi user haqida gap ketgani) kontekstni "
-    + "tushun. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
-    + "markdown belgisi qo'shma:\n"
-    + '{"type": "command yoki chat yoki chart", "command": "<A holati uchun to\'liq buyruq, aks holda bo\'sh satr>", '
-    + '"explain": "<A holati uchun qisqa o\'zbekcha izoh>", '
-    + '"clarify": "<A holatida so\'rov noaniq bo\'lsa savol, aks holda bo\'sh satr>", '
-    + '"reply": "<B holati uchun erkin o\'zbekcha javob, aks holda bo\'sh satr>", '
-    + '"chart_title": "<C holati uchun qisqa sarlavha, masalan foydalanuvchi nomi + \'kunlik sarfi\'>", '
-    + '"chart_data": [{"label": "<kun, masalan 08-10 yoki Dush>", "value": <daqiqa, son>}], '
-    + '"chart_limit": <kunlik limit son, bo\'lmasa 0>}\n'
-    + "A holatida: command har doim 'sudo' bilan boshlanishi va hujjatdagi sintaksisga to'liq mos "
-    + "bo'lishi shart; agar user/miqdor noaniq bo'lsa command'ni bo'sh qoldirib clarify'ga savol yoz. "
-    + "B holatida: type='chat', command/explain/clarify/chart_data bo'sh, javobni reply'ga yoz. "
-    + "C holatida: type='chart', chart_data to'ldirilgan, boshqa maydonlar bo'sh qoldiriladi.";
-
-  // Faqat oxirgi 6 ta almashinuvni (12 ta xabar) yuboramiz — aks holda suhbat uzayavergan
-  // sari (ayniqsa katta history/chart ma'lumotlari tufayli) so'rov hajmi Groq'ning
-  // tokens-per-minute limitidan (413 Request Too Large) oshib ketaveradi.
-  const MAX_HISTORY_MESSAGES = 12;
-  const apiMessages = aiHistory.slice(-MAX_HISTORY_MESSAGES).map(m => ({
-    role: m.role === 'user' ? 'user' : 'assistant',
-    content: m.role === 'user' ? m.text : (m.rawText || JSON.stringify({ command: m.cmd || '', explain: m.explain || '', clarify: m.clarify || '' }))
-  }));
-
-  try{
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + apiKey
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-120b",
-        max_tokens: 1000,
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...apiMessages
-        ]
-      })
-    });
-
-    if(!response.ok){
-      const errBody = await response.text().catch(() => '');
-      if(response.status === 413){
-        throw new Error("So'rov juda katta bo'lib ketdi (Groq limiti: 8000 token/daqiqa). Sabab odatda uzun 'history' ma'lumotini joylashdir. Pastdagi \"Tozalash\" tugmasini bosib suhbatni tozalang, so'ng savolni qayta yozing.");
-      }
-      if(response.status === 429){
-        throw new Error("So'rovlar tez-tez yuborilyapti — Groq rate-limit qo'ydi. Bir necha soniya kutib qayta urinib ko'ring.");
-      }
-      throw new Error(`HTTP ${response.status}: ${errBody.slice(0,200)}`);
-    }
-
-    const data = await response.json();
-    const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '')
-      .trim()
-      .replace(/^```json|```$/g, '')
-      .trim();
-
-    let parsed;
-    try{
-      parsed = JSON.parse(text);
-    }catch(parseErr){
-      aiHistory.push({ role: 'assistant', text: "AI formatga mos javob qaytarmadi (JSON emas). Xom javob: " + text.slice(0,300), time: Date.now() });
-      renderAIChat();
-      saveAIHistory();
-      updateAIRateNote();
-      return;
-    }
-    const entry = { role: 'assistant', rawText: text, time: Date.now() };
-    if(parsed.type === 'chart' && Array.isArray(parsed.chart_data) && parsed.chart_data.length > 0){
-      const clean = parsed.chart_data
-        .filter(d => d && typeof d.label === 'string' && Number.isFinite(Number(d.value)))
-        .map(d => ({ label: String(d.label).slice(0,12), value: Number(d.value) }))
-        .slice(0, 31);
-      if(clean.length > 0){
-        entry.chartTitle = (parsed.chart_title || "Kunlik sarf").toString().slice(0,60);
-        entry.chartData = clean;
-        entry.chartLimit = Number.isFinite(Number(parsed.chart_limit)) ? Number(parsed.chart_limit) : 0;
-      } else {
-        entry.text = "AI ma'lumotni grafik uchun to'g'ri ajratolmadi. Tarix chiqishini to'liqroq joylab ko'ring.";
-      }
-    } else if(parsed.type === 'chat' && parsed.reply && parsed.reply.trim()){
-      entry.reply = parsed.reply.trim();
-    } else if(parsed.clarify && parsed.clarify.trim()){
-      entry.clarify = parsed.clarify.trim();
-    } else if(parsed.command && parsed.command.trim()){
-      entry.cmd = parsed.command.trim();
-      entry.explain = parsed.explain || '';
-      if(isKnownCommand(entry.cmd)){
-        const lineIdx = addCmd(entry.cmd);
-        entry.lineNum = lineIdx + 1;
-        entry.accepted = true;
-      } else {
-        entry.accepted = false;
-      }
-    } else {
-      entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
-    }
-    aiHistory.push(entry);
-  }catch(err){
-    aiHistory.push({ role: 'assistant', text: 'Xatolik yuz berdi: ' + err.message, time: Date.now() });
-  }finally{
-    renderAIChat();
-    saveAIHistory();
-    updateAIRateNote();
-  }
 }
 
-const aiQueryEl = document.getElementById('aiQuery');
-
-function autoResizeAI(){
-  aiQueryEl.style.height = 'auto';
-  aiQueryEl.style.height = aiQueryEl.scrollHeight + 'px';
+function needUser(){
+  const u = requireSafeUser();
+  if(!u){ catalogReset(false); return null; }
+  return u;
 }
-aiQueryEl.addEventListener('input', autoResizeAI);
 
-aiQueryEl.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    if(!document.getElementById('aiAskBtn').disabled) askAI();
-  }
-});
+function catalogPick(id){
+  const item = CATALOG_ROOT.find(c => c.id === id);
+  userText(item.label);
+  ({
+    'status':        flowStatus,
+    'unlock':        flowUnlock,
+    'reset':         flowReset,
+    'add-time':      flowAddTime,
+    'history':       flowHistory,
+    'set-daily':     flowSetDaily,
+    'set-session':   flowSetSession,
+    'add-user':      flowAddUser,
+    'edit-history':  flowEditHistory,
+    'clear-all':     flowClearAll
+  }[id])();
+}
 
-document.getElementById('groqKeyInput').addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){ e.preventDefault(); saveApiKey(); }
-});
+/* ---- umumiy custom-input yordamchilari ---- */
+function askCustomNumber(callbackName, arg, allowNegative){
+  currentPrompt = { text: 'Sonni kiriting:', customInput: { allowNegative, callback: callbackName, arg } };
+  renderAIChat();
+  setTimeout(() => { const el = document.getElementById('catalogCustomInput'); if(el) el.focus(); }, 50);
+}
+function submitCustomNumber(){
+  const cp = currentPrompt;
+  if(!cp || !cp.customInput) return;
+  const raw = document.getElementById('catalogCustomInput').value;
+  const m = sanitizeNumber(raw, cp.customInput.allowNegative);
+  if(!m){ alert(cp.customInput.allowNegative ? "Son noto'g'ri (masalan 60 yoki -30)" : "Musbat butun son kiriting"); return; }
+  window[cp.customInput.callback](cp.customInput.arg, m);
+}
+function askCustomText(callbackName, arg, promptText){
+  currentPrompt = { text: promptText, customTextInput: { callback: callbackName, arg } };
+  renderAIChat();
+  setTimeout(() => { const el = document.getElementById('catalogCustomText'); if(el) el.focus(); }, 50);
+}
+function submitCustomText(){
+  const cp = currentPrompt;
+  if(!cp || !cp.customTextInput) return;
+  const raw = document.getElementById('catalogCustomText').value.trim();
+  const safe = sanitizeUsername(raw);
+  if(!safe){ alert("Username noto'g'ri: faqat harf, raqam, - va _ (max 32 belgi)"); return; }
+  window[cp.customTextInput.callback](cp.customTextInput.arg, safe);
+}
+function askCustomDate(callbackName, arg){
+  currentPrompt = { text: 'Sanani tanlang:', customDateInput: { callback: callbackName, arg, max: new Date().toISOString().slice(0,10) } };
+  renderAIChat();
+}
+function submitCustomDate(){
+  const cp = currentPrompt;
+  if(!cp || !cp.customDateInput) return;
+  const raw = document.getElementById('catalogCustomDate').value;
+  const d = sanitizeDate(raw);
+  if(!d){ alert("Sana noto'g'ri formatda"); return; }
+  window[cp.customDateInput.callback](cp.customDateInput.arg, d);
+}
 
-loadApiKeys();
-renderKeyList();
+/* ---- status ---- */
+function flowStatus(){
+  finishCmd(`${BIN} status`, "Barcha userlarning joriy holatini ko'rsatadi.");
+}
+
+/* ---- unlock ---- */
+function flowUnlock(){
+  const u = needUser(); if(!u) return;
+  finishCmd(`${BIN} unlock ${u}`, `${u} uchun joriy cooldown/lockni hozir tozalaydi.`);
+}
+
+/* ---- reset (tasdiq bilan) ---- */
+function flowReset(){
+  const u = needUser(); if(!u) return;
+  currentPrompt = { text: `${u} uchun kunlik hisobni to'liq to'ldirib, qulfni ochamizmi?`, buttons: [
+    { label: "✅ Ha", onClick: `flowResetConfirm('${u}')` },
+    { label: "❌ Bekor qilish", onClick: 'catalogReset(false)' }
+  ]};
+  renderAIChat();
+}
+function flowResetConfirm(u){
+  userText('✅ Ha');
+  finishCmd(`${BIN} reset ${u}`, `${u} uchun kunlik hisobni to'liq to'ldiradi va qulfni ochadi.`);
+}
+
+/* ---- add-time ---- */
+function flowAddTime(){
+  const u = needUser(); if(!u) return;
+  currentPrompt = { text: `${u} uchun necha daqiqa qo'shamiz? (ayirish uchun manfiy)`, buttons: [
+    { label: '+15', onClick: `flowAddTimePick('${u}', '15')` },
+    { label: '+30', onClick: `flowAddTimePick('${u}', '30')` },
+    { label: '+60', onClick: `flowAddTimePick('${u}', '60')` },
+    { label: '+90', onClick: `flowAddTimePick('${u}', '90')` },
+    { label: '-15', onClick: `flowAddTimePick('${u}', '-15')` },
+    { label: '-30', onClick: `flowAddTimePick('${u}', '-30')` },
+    { label: '-60', onClick: `flowAddTimePick('${u}', '-60')` },
+    { label: "✏️ Boshqa son", onClick: `askCustomNumber('flowAddTimePick', '${u}', true)` }
+  ]};
+  renderAIChat();
+}
+function flowAddTimePick(u, m){
+  userText(`${Number(m) > 0 ? '+' : ''}${m} min`);
+  const cmd = m.startsWith('-') ? `${BIN} add-time -- ${u} ${m}` : `${BIN} add-time ${u} ${m}`;
+  finishCmd(cmd, `${u} uchun bugungi vaqtga ${m} daqiqa ${Number(m) >= 0 ? "qo'shadi" : 'ayiradi'}.`);
+}
+
+/* ---- history ---- */
+function flowHistory(){
+  const u = needUser(); if(!u) return;
+  currentPrompt = { text: `${u} uchun nechta kunlik tarixni ko'rsataylik?`, buttons: [
+    { label: '7 kun', onClick: `flowHistoryPick('${u}', '7')` },
+    { label: '14 kun', onClick: `flowHistoryPick('${u}', '14')` },
+    { label: '30 kun', onClick: `flowHistoryPick('${u}', '30')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowHistoryPick', '${u}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowHistoryPick(u, d){
+  userText(`${d} kun`);
+  finishCmd(`${BIN} history ${u} --days ${d}`, `${u} uchun oxirgi ${d} kunlik sarfni ko'rsatadi.`);
+}
+
+/* ---- set-daily ---- */
+function flowSetDaily(){
+  const u = needUser(); if(!u) return;
+  currentPrompt = { text: `${u} uchun yangi kunlik limit qancha bo'lsin?`, buttons: [
+    { label: '60 min', onClick: `flowSetDailyPick('${u}', '60')` },
+    { label: '90 min', onClick: `flowSetDailyPick('${u}', '90')` },
+    { label: '120 min', onClick: `flowSetDailyPick('${u}', '120')` },
+    { label: '180 min', onClick: `flowSetDailyPick('${u}', '180')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetDailyPick', '${u}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowSetDailyPick(u, m){
+  userText(`${m} min/kun`);
+  finishCmd(`${BIN} set-daily ${u} ${m}`, `${u} uchun kunlik limitni ${m} daqiqaga o'zgartiradi.`);
+}
+
+/* ---- set-session (2 bosqich) ---- */
+function flowSetSession(){
+  const u = needUser(); if(!u) return;
+  currentPrompt = { text: `${u} uchun bitta o'tirish chegarasi qancha bo'lsin?`, buttons: [
+    { label: '20 min', onClick: `flowSetSessionStep2('${u}', '20')` },
+    { label: '30 min', onClick: `flowSetSessionStep2('${u}', '30')` },
+    { label: '40 min', onClick: `flowSetSessionStep2('${u}', '40')` },
+    { label: '60 min', onClick: `flowSetSessionStep2('${u}', '60')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetSessionStep2', '${u}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowSetSessionStep2(u, s){
+  userText(`Sessiya: ${s} min`);
+  currentPrompt = { text: 'Tanaffus (cooldown) qancha bo\'lsin?', buttons: [
+    { label: '60 min', onClick: `flowSetSessionFinish('${u}|${s}', '60')` },
+    { label: '120 min', onClick: `flowSetSessionFinish('${u}|${s}', '120')` },
+    { label: '240 min', onClick: `flowSetSessionFinish('${u}|${s}', '240')` },
+    { label: '360 min', onClick: `flowSetSessionFinish('${u}|${s}', '360')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowSetSessionFinish', '${u}|${s}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowSetSessionFinish(packed, c){
+  const [u, s] = packed.split('|');
+  userText(`Tanaffus: ${c} min`);
+  finishCmd(`${BIN} set-session ${u} --session-min ${s} --cooldown-min ${c}`, `${u} uchun sessiya=${s}min, tanaffus=${c}min o'rnatadi.`);
+}
+
+/* ---- add-user (yangi username, ro'yxatdan tanlanmaydi) ---- */
+function flowAddUser(){
+  askCustomText('flowAddUserStep2', null, "Yangi foydalanuvchi uchun username kiriting (harf/raqam/-/_, max 32):");
+}
+function flowAddUserStep2(_arg, username){
+  userText(username);
+  currentPrompt = { text: `${username} uchun kunlik limit qancha bo'lsin?`, buttons: [
+    { label: '60 min', onClick: `flowAddUserFinish('${username}', '60')` },
+    { label: '90 min', onClick: `flowAddUserFinish('${username}', '90')` },
+    { label: '120 min', onClick: `flowAddUserFinish('${username}', '120')` },
+    { label: '180 min', onClick: `flowAddUserFinish('${username}', '180')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowAddUserFinish', '${username}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowAddUserFinish(username, m){
+  userText(`${m} min/kun`);
+  finishCmd(`${BIN} add-user ${username} ${m}`, `Kuzatuvga "${username}" ni ${m} daqiqa/kun limit bilan qo'shadi.`);
+}
+
+/* ---- edit-history (to'g'ridan-to'g'ri SQLite) ---- */
+function flowEditHistory(){
+  const u = needUser(); if(!u) return;
+  const today = new Date().toISOString().slice(0,10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+  currentPrompt = { text: `${u} uchun qaysi kunni to'g'irlaymiz?`, buttons: [
+    { label: '📅 Bugun', onClick: `flowEditHistoryStep2('${u}', '${today}')` },
+    { label: '📅 Kecha', onClick: `flowEditHistoryStep2('${u}', '${yesterday}')` },
+    { label: "✏️ Boshqa sana", onClick: `askCustomDate('flowEditHistoryStep2', '${u}')` }
+  ]};
+  renderAIChat();
+}
+function flowEditHistoryStep2(u, d){
+  userText(d);
+  currentPrompt = { text: `${d} kuni uchun to'g'ri qiymat (daqiqa) qancha?`, buttons: [
+    { label: '0 min', onClick: `flowEditHistoryFinish('${u}|${d}', '0')` },
+    { label: '30 min', onClick: `flowEditHistoryFinish('${u}|${d}', '30')` },
+    { label: '60 min', onClick: `flowEditHistoryFinish('${u}|${d}', '60')` },
+    { label: '120 min', onClick: `flowEditHistoryFinish('${u}|${d}', '120')` },
+    { label: "✏️ Boshqa", onClick: `askCustomNumber('flowEditHistoryFinish', '${u}|${d}', false)` }
+  ]};
+  renderAIChat();
+}
+function flowEditHistoryFinish(packed, m){
+  const [u, d] = packed.split('|');
+  userText(`${m} min`);
+  finishCmd(
+    `sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE daily_usage SET minutes_used = ${m} WHERE username = '${u}' AND date = '${d}';"`,
+    `${u} ning ${d} kunidagi yozuvini ${m} daqiqaga to'g'irlaydi.`
+  );
+}
+
+/* ---- clear-all (qo'sh tasdiq) ---- */
+function flowClearAll(){
+  currentPrompt = { text: "⚠️ Bu BARCHA userlarning bugungi hisobini tozalaydi. Bekor qilib bo'lmaydi. Davom etamizmi?", buttons: [
+    { label: "✅ Ha, hammasini tozala", onClick: 'flowClearAllConfirm()' },
+    { label: "❌ Yo'q, bekor", onClick: 'catalogReset(false)' }
+  ]};
+  renderAIChat();
+}
+function flowClearAllConfirm(){
+  userText("✅ Ha, hammasini tozala");
+  finishCmd(
+    `sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`,
+    "Barcha userlarni bugun uchun boshidan boshlaydi."
+  );
+}
+
 loadAIHistory();
+catalogReset(false);
 render();
 </script>
 </body>
