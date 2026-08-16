@@ -576,6 +576,25 @@ function highlightCmd(raw){
   return s;
 }
 
+// AI generatsiya qilgan buyruqni hujjatdagi bilinadigan shakllar bilan solishtiradi.
+// LLM hallucination qilsa (noto'g'ri format, taniqli bo'lmagan alt buyruq va h.k.),
+// buyruq avtomatik ro'yxatga QO'SHILMAYDI — foydalanuvchi ogohlantiriladi.
+const KNOWN_CMD_PATTERNS = [
+  /^sudo \/usr\/local\/bin\/brotherwatch status$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch add-time( --)? [a-zA-Z0-9_-]{1,32} -?\d+(\.\d+)?$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch set-daily [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch set-session [a-zA-Z0-9_-]{1,32} --session-min \d+(\.\d+)? --cooldown-min \d+(\.\d+)?$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch unlock [a-zA-Z0-9_-]{1,32}$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch reset [a-zA-Z0-9_-]{1,32}$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch history [a-zA-Z0-9_-]{1,32}( --days \d+)?$/,
+  /^sudo \/usr\/local\/bin\/brotherwatch add-user [a-zA-Z0-9_-]{1,32} \d+(\.\d+)?$/,
+  /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE daily_usage SET minutes_used = \d+(\.\d+)? WHERE username = '[a-zA-Z0-9_-]{1,32}' AND date = '\d{4}-\d{2}-\d{2}';"$/,
+  /^sudo sqlite3 \/var\/lib\/brotherwatch\/brotherwatch\.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date\('now'\);"$/
+];
+function isKnownCommand(cmd){
+  return KNOWN_CMD_PATTERNS.some(re => re.test(cmd));
+}
+
 function removeCmd(i){ commands.splice(i,1); render(); }
 function clearList(){ commands = []; render(); }
 
@@ -729,6 +748,7 @@ function saveAIHistory(){
   catch(err){ /* saqlash muvaffaqiyatsiz bo'lsa ham suhbat shu sessiyada ishlayveradi */ }
 }
 function clearAIHistory(){
+  if(aiHistory.length > 0 && !confirm("Butun suhbat tarixini o'chirasizmi? Bekor qilib bo'lmaydi.")) return;
   aiHistory = [];
   renderAIChat();
   try{ localStorage.removeItem(AI_HISTORY_STORAGE); }catch(err){}
@@ -747,10 +767,14 @@ function renderAIChat(){
     let inner = '';
     if(m.clarify){
       inner = `<div>${escapeHtml(m.clarify)}</div>`;
-    } else if(m.cmd){
+    } else if(m.cmd && m.accepted){
       inner = `<div>${escapeHtml(m.explain || '')}</div>
         <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
         <div class="accepted">✓ men buni pastdagi ro'yxatga #${m.lineNum} qilib chiqarib qo'ydim</div>`;
+    } else if(m.cmd && !m.accepted){
+      inner = `<div>${escapeHtml(m.explain || '')}</div>
+        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>
+        <div class="ai-error">⚠️ bu buyruq hujjatdagi (bw.md) standart shaklga to'liq mos kelmayapti — xavfsizlik uchun avtomatik qo'shilmadi. O'zing tekshirib, to'g'ri bo'lsa qo'lda yoz yoki so'rovni aniqroq qayta yoz.</div>`;
     } else {
       inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
     }
@@ -845,17 +869,30 @@ async function askAI(){
       .replace(/^```json|```$/g, '')
       .trim();
 
-    const parsed = JSON.parse(text);
+    let parsed;
+    try{
+      parsed = JSON.parse(text);
+    }catch(parseErr){
+      aiHistory.push({ role: 'assistant', text: "AI formatga mos javob qaytarmadi (JSON emas). Xom javob: " + text.slice(0,300), time: Date.now() });
+      askBtn.disabled = false;
+      renderAIChat();
+      saveAIHistory();
+      return;
+    }
     const entry = { role: 'assistant', rawText: text, time: Date.now() };
     if(parsed.clarify && parsed.clarify.trim()){
       entry.clarify = parsed.clarify.trim();
     } else if(parsed.command && parsed.command.trim()){
       entry.cmd = parsed.command.trim();
       entry.explain = parsed.explain || '';
-      // Buyruq darhol pastdagi output oynasiga chiqariladi — qo'lda bosish shart emas.
-      const lineIdx = addCmd(entry.cmd);
-      entry.lineNum = lineIdx + 1;
-      entry.accepted = true;
+      if(isKnownCommand(entry.cmd)){
+        // Faqat hujjatdagi bilinadigan shaklga mos buyruqlar avtomatik ro'yxatga chiqadi.
+        const lineIdx = addCmd(entry.cmd);
+        entry.lineNum = lineIdx + 1;
+        entry.accepted = true;
+      } else {
+        entry.accepted = false;
+      }
     } else {
       entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
     }
