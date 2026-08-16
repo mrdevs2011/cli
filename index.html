@@ -173,6 +173,32 @@ button.danger:hover{ background: var(--red-dark); }
 .key-status.ok{ color:var(--accent-dark); }
 .key-status.missing{ color:var(--red); }
 
+.key-list{ display:flex; flex-direction:column; gap:6px; margin-top:12px; }
+.key-empty{ font-size:12.5px; color:var(--text-dim); font-style:italic; padding:4px 0; }
+.key-row{
+  display:flex; align-items:center; gap:10px; background:#f2faff; border:1px solid var(--line);
+  border-radius:10px; padding:9px 10px;
+}
+.key-row input[type="checkbox"]{
+  width:18px; height:18px; flex-shrink:0; accent-color:var(--accent); cursor:pointer;
+}
+.key-row .key-mask{
+  flex:1; font-family:'SF Mono', Consolas, monospace; font-size:13px; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.key-row .key-active-tag{ font-size:10px; font-weight:700; color:var(--accent-dark); flex-shrink:0; }
+.key-row .key-del{
+  flex-shrink:0; color:var(--text-dim); cursor:pointer; width:22px; height:22px;
+  display:flex; align-items:center; justify-content:center; border-radius:6px;
+}
+.key-row .key-del:hover{ background:#ffe4e1; color:var(--red); }
+.add-key-btn{
+  width:100%; background:var(--panel); color:var(--accent-dark); border:1px dashed var(--accent);
+  margin-top:10px;
+}
+.add-key-btn:hover{ background:#f2faff; }
+.add-key-form{ margin-top:10px; }
+
 .ai-chart-wrap{
   background:#0f2536; border-radius:10px; padding:14px 10px 6px; margin-top:8px; margin-bottom:8px;
 }
@@ -189,15 +215,19 @@ button.danger:hover{ background: var(--red-dark); }
 .ai-chart-summary{ color:#a8c8dc; font-size:11.5px; padding:8px 4px 2px; border-top:1px solid #1c3a4f; margin-top:10px; }
 
 .ai-inputbar{
-  display:flex; align-items:center; gap:8px; margin-top:14px;
-  background:var(--panel); border:1px solid var(--line); border-radius:26px;
-  padding:6px 6px 6px 16px;
+  display:flex; align-items:flex-end; gap:8px; margin-top:14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:22px;
+  padding:6px 6px 6px 16px; transition: border-radius .1s ease;
 }
-.ai-inputbar input{
+.ai-inputbar textarea{
   border:none; background:transparent; flex:1; padding:8px 0; font-size:15px;
-  min-width:0;
+  min-width:0; resize:none; font-family:inherit; color:var(--text);
+  line-height:20px; max-height:100px; overflow-y:auto; display:block;
 }
-.ai-inputbar input:focus{ outline:none; border:none; }
+.ai-inputbar textarea:focus{ outline:none; border:none; }
+.ai-inputbar textarea, .ai-inputbar textarea::-webkit-scrollbar{ scrollbar-width:thin; }
+.ai-inputbar textarea::-webkit-scrollbar{ width:4px; }
+.ai-inputbar textarea::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
 .ai-send-btn{
   width:38px; height:38px; flex-shrink:0; border-radius:50%; padding:0; margin-top:0;
   display:flex; align-items:center; justify-content:center;
@@ -314,10 +344,13 @@ button.danger:hover{ background: var(--red-dark); }
   </div>
   <div class="card">
     <h2>Groq API key</h2>
-    <div class="desc">AI yordamchi shu key orqali ishlaydi. Key faqat shu brauzerning localStorage'ida saqlanadi — hech qayerga yuborilmaydi, faqat to'g'ridan-to'g'ri Groq'ga.</div>
-    <input type="password" id="groqKeyInput" name="bw_groq_key_field" placeholder="gsk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other">
-    <button type="button" style="width:100%" onclick="saveApiKey()">Saqlash</button>
-    <div class="key-status" id="keyStatus"></div>
+    <div class="desc">AI yordamchi belgilangan (faol) key orqali ishlaydi. Bir nechta key saqlab, kerakligini checkbox bilan tanlashing mumkin. Kalitlar faqat shu brauzerning localStorage'ida saqlanadi — hech qayerga yuborilmaydi, faqat to'g'ridan-to'g'ri Groq'ga.</div>
+    <div class="key-list" id="keyList"></div>
+    <button type="button" class="add-key-btn" id="addKeyBtn" onclick="toggleAddKeyForm()">+ Yangi key qo'shish</button>
+    <div class="add-key-form" id="addKeyForm" style="display:none;">
+      <input type="password" id="groqKeyInput" name="bw_groq_key_field" placeholder="gsk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other">
+      <button type="button" style="width:100%" onclick="saveApiKey()">Saqlash</button>
+    </div>
     <div class="hint">⚠️ Ogohlantirish: bu key brauzer kodida ochiq turadi. Har kim DevTools orqali ko'rishi mumkin. Faqat o'zing ishlatadigan shaxsiy sahifa uchun mos — public/ko'p odam kiradigan sahifaga qo'yma.</div>
   </div>
 </div>
@@ -377,7 +410,7 @@ button.danger:hover{ background: var(--red-dark); }
       <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
     </div>
     <div class="ai-inputbar">
-      <input type="text" id="aiQuery" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh">
+      <textarea id="aiQuery" rows="1" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh"></textarea>
       <button type="button" class="ai-send-btn" id="aiAskBtn" onclick="askAI()" title="Yuborish">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg>
       </button>
@@ -662,39 +695,93 @@ function cmdClearAll(){
   addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
 }
 
-const GROQ_KEY_STORAGE = 'bw_groq_api_key';
+const GROQ_KEY_STORAGE = 'bw_groq_api_key';       // eski, bitta-key format (migratsiya uchun)
+const GROQ_KEYS_STORAGE = 'bw_groq_api_keys';      // yangi, ko'p-key format
+let apiKeys = [];
 
+function loadApiKeys(){
+  try{
+    const raw = localStorage.getItem(GROQ_KEYS_STORAGE);
+    apiKeys = raw ? JSON.parse(raw) : [];
+  }catch(err){
+    apiKeys = [];
+  }
+  // Eski bitta-key formatdan migratsiya (birinchi marta ochilganda)
+  if(apiKeys.length === 0){
+    try{
+      const oldKey = localStorage.getItem(GROQ_KEY_STORAGE);
+      if(oldKey){
+        apiKeys = [{ id: 'm' + Date.now(), key: oldKey, active: true }];
+        saveApiKeysToStorage();
+        localStorage.removeItem(GROQ_KEY_STORAGE);
+      }
+    }catch(err){ /* muammo emas */ }
+  }
+}
+function saveApiKeysToStorage(){
+  try{
+    localStorage.setItem(GROQ_KEYS_STORAGE, JSON.stringify(apiKeys));
+    return true;
+  }catch(err){
+    console.error('[brotherwatch] saveApiKeysToStorage failed:', err);
+    return false;
+  }
+}
 function getApiKey(){
-  try{ return localStorage.getItem(GROQ_KEY_STORAGE) || ''; }
-  catch(err){ console.error('[brotherwatch] getApiKey failed:', err); return ''; }
+  const active = apiKeys.find(k => k.active);
+  return active ? active.key : '';
+}
+function toggleAddKeyForm(){
+  const form = document.getElementById('addKeyForm');
+  const showing = form.style.display !== 'none';
+  form.style.display = showing ? 'none' : 'block';
+  if(!showing) document.getElementById('groqKeyInput').focus();
 }
 function saveApiKey(){
   const input = document.getElementById('groqKeyInput');
   const key = input.value.trim();
   if(!key){ alert("Key kiritilmadi"); return; }
-  try{
-    localStorage.setItem(GROQ_KEY_STORAGE, key);
-    const check = localStorage.getItem(GROQ_KEY_STORAGE);
-    if(check !== key){
-      throw new Error('write/readback mismatch — localStorage saqlamadi');
-    }
-    input.value = '';
-    renderKeyStatus();
-  }catch(err){
-    console.error('[brotherwatch] saveApiKey failed:', err);
-    alert("localStorage ishlamayapti: " + err.message + "\n\nTekshir: Private/Incognito rejimda emasmisan? Brauzer sozlamalarida bu sayt uchun cookies/site-data bloklanmaganmi?");
+  const entry = { id: 'k' + Date.now(), key: key, active: apiKeys.length === 0 };
+  apiKeys.push(entry);
+  if(!saveApiKeysToStorage()){
+    apiKeys.pop();
+    alert("localStorage ishlamayapti. Tekshir: Private/Incognito rejimda emasmisan? Brauzer sozlamalarida bu sayt uchun cookies/site-data bloklanmaganmi?");
+    return;
   }
+  input.value = '';
+  document.getElementById('addKeyForm').style.display = 'none';
+  renderKeyList();
 }
-function renderKeyStatus(){
-  const el = document.getElementById('keyStatus');
-  const key = getApiKey();
-  if(key){
-    el.textContent = `✓ key saqlangan (...${key.slice(-4)})`;
-    el.className = 'key-status ok';
-  } else {
-    el.textContent = '✗ key kiritilmagan — AI yordamchi ishlamaydi';
-    el.className = 'key-status missing';
+function setActiveKey(id){
+  apiKeys.forEach(k => { k.active = (k.id === id); });
+  saveApiKeysToStorage();
+  renderKeyList();
+}
+function deleteApiKey(id){
+  const wasActive = apiKeys.find(k => k.id === id && k.active);
+  apiKeys = apiKeys.filter(k => k.id !== id);
+  if(wasActive && apiKeys.length > 0){
+    apiKeys[0].active = true;
   }
+  saveApiKeysToStorage();
+  renderKeyList();
+}
+function renderKeyList(){
+  const list = document.getElementById('keyList');
+  if(apiKeys.length === 0){
+    list.innerHTML = '<div class="key-empty">— hali key qo\'shilmagan, AI yordamchi ishlamaydi —</div>';
+    return;
+  }
+  list.innerHTML = apiKeys.map(k => `
+    <div class="key-row">
+      <input type="checkbox" ${k.active ? 'checked' : ''} onchange="setActiveKey('${k.id}')" title="faol qilish">
+      <span class="key-mask">...${escapeHtml(k.key.slice(-6))}</span>
+      ${k.active ? '<span class="key-active-tag">FAOL</span>' : ''}
+      <span class="key-del" onclick="deleteApiKey('${k.id}')" title="o'chirish">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </span>
+    </div>
+  `).join('');
 }
 
 const BW_DOC = [
@@ -840,6 +927,7 @@ async function askAI(){
 
   aiHistory.push({ role: 'user', text: query, time: Date.now() });
   input.value = '';
+  autoResizeAI();
   renderAIChat();
   askBtn.disabled = true;
 
@@ -972,15 +1060,27 @@ async function askAI(){
   }
 }
 
-document.getElementById('aiQuery').addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && !document.getElementById('aiAskBtn').disabled) askAI();
+const aiQueryEl = document.getElementById('aiQuery');
+
+function autoResizeAI(){
+  aiQueryEl.style.height = 'auto';
+  aiQueryEl.style.height = aiQueryEl.scrollHeight + 'px';
+}
+aiQueryEl.addEventListener('input', autoResizeAI);
+
+aiQueryEl.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    if(!document.getElementById('aiAskBtn').disabled) askAI();
+  }
 });
 
 document.getElementById('groqKeyInput').addEventListener('keydown', (e) => {
   if(e.key === 'Enter'){ e.preventDefault(); saveApiKey(); }
 });
 
-renderKeyStatus();
+loadApiKeys();
+renderKeyList();
 loadAIHistory();
 render();
 </script>
