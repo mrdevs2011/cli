@@ -5,382 +5,357 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brotherwatch</title>
 <style>
-  :root{
-    --bg: #eaf5fc;
-    --panel: #ffffff;
-    --line: #cfe7f5;
-    --accent: #4fb3e8;
-    --accent-dark: #2e93c9;
-    --red: #e8746b;
-    --red-dark: #d95c53;
-    --text: #1f3b4d;
-    --text-dim: #6d8ba0;
-    --radius: 14px;
-  }
-  *{ box-sizing:border-box; }
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
-    padding: 24px 16px 60px;
-  }
-  .wrap{ max-width: 480px; margin: 0 auto; }
-  h1{ font-size: 22px; font-weight:700; margin-bottom: 4px; color:var(--accent-dark); }
-  .sub{ font-size:13px; color:var(--text-dim); margin-bottom:20px; }
+:root{
+  --bg: #eaf5fc;
+  --panel: #ffffff;
+  --line: #cfe7f5;
+  --accent: #4fb3e8;
+  --accent-dark: #2e93c9;
+  --red: #e8746b;
+  --red-dark: #d95c53;
+  --text: #1f3b4d;
+  --text-dim: #6d8ba0;
+  --radius: 14px;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  padding: 24px 16px 60px;
+}
+.wrap{ max-width: 480px; margin: 0 auto; }
+h1{ font-size: 22px; font-weight:700; margin-bottom: 4px; color:var(--accent-dark); }
+.sub{ font-size:13px; color:var(--text-dim); margin-bottom:20px; }
 
-  /* TAB SWITCHER */
-  .tabs{
-    display:flex; flex-wrap:wrap; gap:4px; background:var(--panel); border:1px solid var(--line);
-    border-radius:12px; padding:4px; margin-top:20px;
-  }
-  .tab-btn{
-    flex:1; min-width:70px; background:transparent; color:var(--text-dim); border:none;
-    font-size:12px; font-weight:600; padding:9px 4px; border-radius:9px;
-    margin-top:0; cursor:pointer; transition: background .15s ease, color .15s ease;
-  }
-  .tab-btn:hover{ background:#f2faff; color:var(--accent-dark); }
-  .tab-btn.active{ background:var(--accent); color:#ffffff; }
-  .tab-panel .card:first-child{ margin-top:16px; }
+.tabs{
+  display:flex; flex-wrap:wrap; gap:4px; background:var(--panel); border:1px solid var(--line);
+  border-radius:12px; padding:4px; margin-top:20px;
+}
+.tab-btn{
+  flex:1; min-width:70px; background:transparent; color:var(--text-dim); border:none;
+  font-size:12px; font-weight:600; padding:9px 4px; border-radius:9px;
+  margin-top:0; cursor:pointer; transition: background .15s ease, color .15s ease;
+}
+.tab-btn:hover{ background:#f2faff; color:var(--accent-dark); }
+.tab-btn.active{ background:var(--accent); color:#ffffff; }
+.tab-panel .card:first-child{ margin-top:16px; }
 
-  /* USER SELECT */
-  select, input[type="text"], input[type="date"]{
-    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
-    font-size:15px; padding:12px 14px; border-radius:10px; outline:none;
-  }
-  select:focus, input:focus{ border-color:var(--accent); }
-  label{ display:block; font-size:13px; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
+select, input[type="text"], input[type="date"], input[type="password"]{
+  width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+  font-size:15px; padding:12px 14px; border-radius:10px; outline:none;
+}
+select:focus, input:focus{ border-color:var(--accent); }
+label{ display:block; font-size:13px; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
+.row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+.row input{ flex:1; }
+.row .unit{ font-size:13px; color:var(--text-dim); white-space:nowrap; }
 
-  .row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
-  .row input{ flex:1; }
-  .row .unit{ font-size:13px; color:var(--text-dim); white-space:nowrap; }
+button{
+  background: var(--accent); color:#ffffff; border:none; font-weight:600;
+  font-size:14px; padding:12px 14px; border-radius:10px; cursor:pointer;
+  margin-top:10px; transition: background .15s ease, transform .1s ease;
+}
+button:hover{ background: var(--accent-dark); }
+button:active{ transform: scale(.98); }
+button.secondary{ background:var(--panel); color:var(--accent-dark); border:1px solid var(--line); }
+button.secondary:hover{ background:#f2faff; }
+button.danger{ background: var(--red); }
+button.danger:hover{ background: var(--red-dark); }
 
-  button{
-    background: var(--accent); color:#ffffff; border:none; font-weight:600;
-    font-size:14px; padding:12px 14px; border-radius:10px; cursor:pointer;
-    margin-top:10px; transition: background .15s ease, transform .1s ease;
-  }
-  button:hover{ background: var(--accent-dark); }
-  button:active{ transform: scale(.98); }
-  button.secondary{ background:var(--panel); color:var(--accent-dark); border:1px solid var(--line); }
-  button.secondary:hover{ background:#f2faff; }
-  button.danger{ background: var(--red); }
-  button.danger:hover{ background: var(--red-dark); }
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px; margin-top:16px; box-shadow: 0 1px 3px rgba(46,147,201,0.06);
+}
+.card h2{ font-size:14px; font-weight:700; color:var(--text); margin:0 0 2px; }
+.card .desc{ font-size:12px; color:var(--text-dim); margin-bottom:4px; }
 
-  .card{
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:16px; margin-top:16px; box-shadow: 0 1px 3px rgba(46,147,201,0.06);
-  }
-  .card h2{ font-size:14px; font-weight:700; color:var(--text); margin:0 0 2px; }
-  .card .desc{ font-size:12px; color:var(--text-dim); margin-bottom:4px; }
+.out-box{
+  background:#0f2536; border:1px solid #1c3a4f; border-radius:var(--radius);
+  margin-top:24px; padding:14px; font-family: 'SF Mono', Consolas, monospace;
+  font-size:12.5px; max-height:300px; overflow-y:auto; scroll-behavior:smooth;
+}
+.out-line{
+  display:flex; gap:8px; padding:8px 0 14px; border-bottom:1px solid #1c3a4f;
+  overflow-x:auto; -webkit-overflow-scrolling:touch; color:#dbeeff;
+  position:relative;
+}
+.out-line::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:2px;
+  background:var(--accent); border-radius:2px; transform:scaleX(0); transform-origin:left;
+  opacity:0; box-shadow: 0 0 6px var(--accent);
+}
+.out-line.flash::after{
+  opacity:1; transform:scaleX(1);
+  transition: transform .5s ease, opacity .5s ease .4s;
+}
+.out-line:last-child{ border-bottom:none; }
+.out-line .left-group{
+  display:flex; align-items:center; gap:4px; flex-shrink:0;
+  position:sticky; left:0; background:#0f2536; padding-right:6px;
+}
+.out-line .left-group .num{ color:#7fd0ff; font-weight:700; }
+.out-line span.txt{ white-space:pre; cursor:pointer; flex:1; }
+.out-line .icon-group{
+  display:flex; gap:2px; flex-shrink:0;
+  position:sticky; right:0; background:#0f2536; padding-left:6px;
+}
+.out-line .icon-btn{
+  color:#7fa9c2; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:5px;
+}
+.out-line .icon-btn.expand,
+.out-line .icon-group{
+  opacity:0; transition:opacity .15s ease;
+}
+.out-line:hover .icon-btn.expand,
+.out-line:hover .icon-group,
+.out-line:active .icon-btn.expand,
+.out-line:active .icon-group{
+  opacity:1;
+}
+.out-line .icon-btn:hover{ background:#1c3a4f; }
+.out-line .icon-btn.copy:hover{ color:#7fd0ff; }
+.out-line .icon-btn.del:hover{ color:var(--red); }
 
-  /* OUTPUT */
-  .out-box{
-    background:#0f2536; border:1px solid #1c3a4f; border-radius:var(--radius);
-    margin-top:24px; padding:14px; font-family: 'SF Mono', Consolas, monospace;
-    font-size:12.5px; max-height:300px; overflow-y:auto; scroll-behavior:smooth;
-  }
-  .out-line{
-    display:flex; gap:8px; padding:8px 0 14px; border-bottom:1px solid #1c3a4f;
-    overflow-x:auto; -webkit-overflow-scrolling:touch; color:#dbeeff;
-    position:relative;
-  }
-  .out-line::after{
-    content:''; position:absolute; left:0; right:0; bottom:0; height:2px;
-    background:var(--accent); border-radius:2px; transform:scaleX(0); transform-origin:left;
-    opacity:0; box-shadow: 0 0 6px var(--accent);
-  }
-  .out-line.flash::after{
-    opacity:1; transform:scaleX(1);
-    transition: transform .5s ease, opacity .5s ease .4s;
-  }
-  .out-line:last-child{ border-bottom:none; }
-  .out-line .left-group{
-    display:flex; align-items:center; gap:4px; flex-shrink:0;
-    position:sticky; left:0; background:#0f2536; padding-right:6px;
-  }
-  .out-line .left-group .num{ color:#7fd0ff; font-weight:700; }
-  .out-line span.txt{ white-space:pre; cursor:pointer; flex:1; }
-  .out-line .icon-group{
-    display:flex; gap:2px; flex-shrink:0;
-    position:sticky; right:0; background:#0f2536; padding-left:6px;
-  }
-  .out-line .icon-btn{
-    color:#7fa9c2; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    width:22px; height:22px; border-radius:5px;
-  }
-  /* Amal tugmalari (expand/copy/o'chirish) standart holatda yashirin —
-     faqat qator ustiga hover qilinganda (yoki teginilganda) chiqadi */
-  .out-line .icon-btn.expand,
-  .out-line .icon-group{
-    opacity:0; transition:opacity .15s ease;
-  }
-  .out-line:hover .icon-btn.expand,
-  .out-line:hover .icon-group,
-  .out-line:active .icon-btn.expand,
-  .out-line:active .icon-group{
-    opacity:1;
-  }
-  .out-line .icon-btn:hover{ background:#1c3a4f; }
-  .out-line .icon-btn.copy:hover{ color:#7fd0ff; }
-  .out-line .icon-btn.del:hover{ color:var(--red); }
+.tok-kw{ color:#82b1ff; font-weight:700; }
+.tok-str{ color:#ffb072; }
+.tok-num{ color:#7ee787; }
+.tok-flag{ color:#d0a8ff; }
+.tok-bin{ color:#6f8fa8; }
+.out-empty{ color:#5f8296; font-size:13px; font-style:italic; }
+.out-actions{ display:flex; gap:8px; margin-top:10px; }
+.out-actions button{ flex:1; margin-top:0; }
 
-  /* SQL-uslubidagi rangli tokenlar */
-  .tok-kw{ color:#82b1ff; font-weight:700; }
-  .tok-str{ color:#ffb072; }
-  .tok-num{ color:#7ee787; }
-  .tok-flag{ color:#d0a8ff; }
-  .tok-bin{ color:#6f8fa8; }
-  .out-empty{ color:#5f8296; font-size:13px; font-style:italic; }
-  .out-actions{ display:flex; gap:8px; margin-top:10px; }
-  .out-actions button{ flex:1; margin-top:0; }
+.out-box, .out-line{ scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+.out-box::-webkit-scrollbar, .out-line::-webkit-scrollbar{ height:5px; width:5px; }
+.out-box::-webkit-scrollbar-track, .out-line::-webkit-scrollbar-track{ background:transparent; }
+.out-box::-webkit-scrollbar-thumb, .out-line::-webkit-scrollbar-thumb{
+  background:#1c3a4f; border-radius:4px;
+}
+.out-line:hover::-webkit-scrollbar-thumb, .out-line:active::-webkit-scrollbar-thumb{
+  background:var(--accent);
+}
+.hint{ font-size:12px; color:var(--text-dim); margin-top:6px; }
 
-  /* Minimalist custom scrollbars — browser's default bar hidden everywhere in .out-box */
-  .out-box, .out-line{ scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-  .out-box::-webkit-scrollbar, .out-line::-webkit-scrollbar{ height:5px; width:5px; }
-  .out-box::-webkit-scrollbar-track, .out-line::-webkit-scrollbar-track{ background:transparent; }
-  .out-box::-webkit-scrollbar-thumb, .out-line::-webkit-scrollbar-thumb{
-    background:#1c3a4f; border-radius:4px;
-  }
-  .out-line:hover::-webkit-scrollbar-thumb, .out-line:active::-webkit-scrollbar-thumb{
-    background:var(--accent);
-  }
+.ai-clear{
+  font-size:12px; color:var(--text-dim); cursor:pointer; text-decoration:underline;
+}
+.ai-clear:hover{ color:var(--red); }
+.ai-chat{
+  margin-top:12px; max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
+  scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+}
+.ai-chat::-webkit-scrollbar{ width:5px; }
+.ai-chat::-webkit-scrollbar-track{ background:transparent; }
+.ai-chat::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
+.ai-empty{ color:var(--text-dim); font-size:13px; font-style:italic; padding:6px 0; }
+.ai-msg{ display:flex; }
+.ai-msg.user{ justify-content:flex-end; }
+.ai-msg.assistant{ justify-content:flex-start; }
+.ai-bubble{
+  max-width:88%; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.5;
+}
+.ai-msg.user .ai-bubble{ background:var(--accent); color:#ffffff; border-bottom-right-radius:3px; }
+.ai-msg.assistant .ai-bubble{ background:#f2faff; color:var(--text); border:1px solid var(--line); border-bottom-left-radius:3px; }
+.ai-cmd{
+  background:#0f2536; color:#dbeeff; border-radius:8px; padding:10px 12px;
+  font-family:'SF Mono', Consolas, monospace; font-size:12px; overflow-x:auto;
+  white-space:pre; margin-top:8px; margin-bottom:8px;
+}
+.ai-actions{ display:flex; gap:8px; }
+.ai-actions button{ flex:1; margin-top:0; padding:8px 10px; font-size:12.5px; }
+.ai-actions .accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding:8px 0; }
+.ai-loading{ color:var(--text-dim); font-size:13px; font-style:italic; }
+.ai-error{ color:var(--red); font-size:13px; }
 
-  .hint{ font-size:12px; color:var(--text-dim); margin-top:6px; }
+.key-status{ font-size:12px; margin-top:8px; font-weight:600; }
+.key-status.ok{ color:var(--accent-dark); }
+.key-status.missing{ color:var(--red); }
 
-  /* AI YORDAMCHI — chat ko'rinishi */
-  .ai-clear{
-    font-size:12px; color:var(--text-dim); cursor:pointer; text-decoration:underline;
-  }
-  .ai-clear:hover{ color:var(--red); }
-  .ai-chat{
-    margin-top:12px; max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;
-    scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
-  }
-  .ai-chat::-webkit-scrollbar{ width:5px; }
-  .ai-chat::-webkit-scrollbar-track{ background:transparent; }
-  .ai-chat::-webkit-scrollbar-thumb{ background:var(--line); border-radius:4px; }
-  .ai-empty{ color:var(--text-dim); font-size:13px; font-style:italic; padding:6px 0; }
-
-  .ai-msg{ display:flex; }
-  .ai-msg.user{ justify-content:flex-end; }
-  .ai-msg.assistant{ justify-content:flex-start; }
-  .ai-bubble{
-    max-width:88%; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.5;
-  }
-  .ai-msg.user .ai-bubble{ background:var(--accent); color:#ffffff; border-bottom-right-radius:3px; }
-  .ai-msg.assistant .ai-bubble{ background:#f2faff; color:var(--text); border:1px solid var(--line); border-bottom-left-radius:3px; }
-
-  .ai-cmd{
-    background:#0f2536; color:#dbeeff; border-radius:8px; padding:10px 12px;
-    font-family:'SF Mono', Consolas, monospace; font-size:12px; overflow-x:auto;
-    white-space:pre; margin-top:8px; margin-bottom:8px;
-  }
-  .ai-actions{ display:flex; gap:8px; }
-  .ai-actions button{ flex:1; margin-top:0; padding:8px 10px; font-size:12.5px; }
-  .ai-actions .accepted{ color:var(--accent-dark); font-size:12px; font-weight:600; padding:8px 0; }
-  .ai-loading{ color:var(--text-dim); font-size:13px; font-style:italic; }
-  .ai-error{ color:var(--red); font-size:13px; }
-
-  /* FULLSCREEN COMMAND VIEW */
-  .fs-overlay{
-    display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
-    z-index:100; align-items:center; justify-content:center; padding:20px;
-    backdrop-filter: blur(2px);
-  }
-  .fs-overlay.open{ display:flex; }
-  .fs-panel{
-    background:#0f2536; border:1px solid #1c3a4f; border-radius:16px;
-    width:100%; max-width:520px; max-height:80vh; display:flex; flex-direction:column;
-    overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.35);
-  }
-  /* Haqiqiy brauzer fullscreen rejimida — panel butun ekranni egallaydi */
-  .fs-overlay:fullscreen{ padding:0; background:#0f2536; }
-  .fs-overlay:fullscreen .fs-panel{
-    max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
-  }
-  .fs-overlay:-webkit-full-screen{ padding:0; background:#0f2536; }
-  .fs-overlay:-webkit-full-screen .fs-panel{
-    max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
-  }
-  .fs-head{
-    display:flex; align-items:center; gap:8px; padding:12px 14px;
-    border-bottom:1px solid #1c3a4f; flex-shrink:0;
-  }
-  .fs-title{ color:#7fd0ff; font-weight:700; font-family:'SF Mono', Consolas, monospace; font-size:13px; flex:1; }
-  .fs-body{
-    padding:16px; overflow:auto; color:#dbeeff; font-family:'SF Mono', Consolas, monospace;
-    font-size:14px; line-height:1.6; white-space:pre-wrap; word-break:break-all;
-  }
-  .fs-overlay:fullscreen .fs-body,
-  .fs-overlay:-webkit-full-screen .fs-body{
-    flex:1; display:flex; align-items:center; font-size:18px; padding:32px;
-  }
+.fs-overlay{
+  display:none; position:fixed; inset:0; background:rgba(10,20,28,0.72);
+  z-index:100; align-items:center; justify-content:center; padding:20px;
+  backdrop-filter: blur(2px);
+}
+.fs-overlay.open{ display:flex; }
+.fs-panel{
+  background:#0f2536; border:1px solid #1c3a4f; border-radius:16px;
+  width:100%; max-width:520px; max-height:80vh; display:flex; flex-direction:column;
+  overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.35);
+}
+.fs-overlay:fullscreen{ padding:0; background:#0f2536; }
+.fs-overlay:fullscreen .fs-panel{
+  max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
+}
+.fs-overlay:-webkit-full-screen{ padding:0; background:#0f2536; }
+.fs-overlay:-webkit-full-screen .fs-panel{
+  max-width:none; max-height:none; width:100vw; height:100vh; border-radius:0; border:none;
+}
+.fs-head{
+  display:flex; align-items:center; gap:8px; padding:12px 14px;
+  border-bottom:1px solid #1c3a4f; flex-shrink:0;
+}
+.fs-title{ color:#7fd0ff; font-weight:700; font-family:'SF Mono', Consolas, monospace; font-size:13px; flex:1; }
+.fs-body{
+  padding:16px; overflow:auto; color:#dbeeff; font-family:'SF Mono', Consolas, monospace;
+  font-size:14px; line-height:1.6; white-space:pre-wrap; word-break:break-all;
+}
+.fs-overlay:fullscreen .fs-body,
+.fs-overlay:-webkit-full-screen .fs-body{
+  flex:1; display:flex; align-items:center; font-size:18px; padding:32px;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>brotherwatch</h1>
-  <div class="sub">Ekran vaqtini boshqarish</div>
+<h1>brotherwatch</h1>
+<div class="sub">Ekran vaqtini boshqarish</div>
 
-  <label for="userSelect">Foydalanuvchi</label>
-  <select id="userSelect">
-    <option value="muhammad">muhammad</option>
-    <option value="komoliddin">komoliddin</option>
-    <option value="__custom">boshqa (yozish)...</option>
-  </select>
-  <input type="text" id="customUser" placeholder="username" maxlength="32" style="display:none; margin-top:8px;">
+<label for="userSelect">Foydalanuvchi</label>
+<select id="userSelect">
+<option value="muhammad">muhammad</option>
+<option value="komoliddin">komoliddin</option>
+<option value="__custom">boshqa (yozish)...</option>
+</select>
+<input type="text" id="customUser" placeholder="username" maxlength="32" style="display:none; margin-top:8px;">
 
-  <!-- TAB SWITCHER -->
-  <div class="tabs">
-    <button class="tab-btn active" id="tabBtnQuick" onclick="switchTab('quick')">Tezkor</button>
-    <button class="tab-btn" id="tabBtnSettings" onclick="switchTab('settings')">Sozlamalar</button>
-    <button class="tab-btn" id="tabBtnDanger" onclick="switchTab('danger')">Xavfli</button>
-    <button class="tab-btn" id="tabBtnView" onclick="switchTab('view')">Ko'rish</button>
-    <button class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">✦ AI</button>
+<div class="tabs">
+<button class="tab-btn active" id="tabBtnQuick" onclick="switchTab('quick')">Tezkor</button>
+<button class="tab-btn" id="tabBtnSettings" onclick="switchTab('settings')">Sozlamalar</button>
+<button class="tab-btn" id="tabBtnDanger" onclick="switchTab('danger')">Xavfli</button>
+<button class="tab-btn" id="tabBtnView" onclick="switchTab('view')">Ko'rish</button>
+<button class="tab-btn" id="tabBtnAI" onclick="switchTab('ai')">✦ AI</button>
+</div>
+
+<div class="tab-panel" id="panelQuick">
+  <div class="card">
+    <h2>Vaqt qo'shish</h2>
+    <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
+    <div class="row">
+      <input type="text" id="addMin" value="60" inputmode="numeric">
+      <span class="unit">min</span>
+    </div>
+    <button style="width:100%" onclick="cmdAddTime()">Qo'shish</button>
   </div>
-
-  <!-- TEZKOR: har kuni tez-tez ishlatiladigan amallar -->
-  <div class="tab-panel" id="panelQuick">
-
-    <div class="card">
-      <h2>Vaqt qo'shish</h2>
-      <div class="desc">Bugungi qolgan vaqtga qo'shadi. Ayirish uchun manfiy son yoz (masalan: -30).</div>
-      <div class="row">
-        <input type="text" id="addMin" value="60" inputmode="numeric">
-        <span class="unit">min</span>
-      </div>
-      <button style="width:100%" onclick="cmdAddTime()">Qo'shish</button>
-    </div>
-
-    <div class="card">
-      <h2>Qulfni ochish</h2>
-      <div class="desc">Joriy cooldown/lockni hozir tozalaydi.</div>
-      <button class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
-    </div>
-
+  <div class="card">
+    <h2>Qulfni ochish</h2>
+    <div class="desc">Joriy cooldown/lockni hozir tozalaydi.</div>
+    <button class="secondary" style="width:100%" onclick="cmdUnlock()">Hozir ochish</button>
   </div>
+</div>
 
-  <!-- SOZLAMALAR: kamroq o'zgaradigan konfiguratsiya -->
-  <div class="tab-panel" id="panelSettings" style="display:none;">
-
-    <div class="card">
-      <h2>Kunlik limit</h2>
-      <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
-      <div class="row">
-        <input type="text" id="dailyMin" value="120" inputmode="numeric">
-        <span class="unit">min/kun</span>
-      </div>
-      <button style="width:100%" onclick="cmdSetDaily()">O'rnatish</button>
+<div class="tab-panel" id="panelSettings" style="display:none;">
+  <div class="card">
+    <h2>Kunlik limit</h2>
+    <div class="desc">Har kungi umumiy ruxsat etilgan vaqt.</div>
+    <div class="row">
+      <input type="text" id="dailyMin" value="120" inputmode="numeric">
+      <span class="unit">min/kun</span>
     </div>
-
-    <div class="card">
-      <h2>Bir o'tirish va tanaffus</h2>
-      <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
-      <label>Bir o'tirish chegarasi</label>
-      <div class="row">
-        <input type="text" id="sessMin" value="40" inputmode="numeric">
-        <span class="unit">min</span>
-      </div>
-      <label>Tanaffus</label>
-      <div class="row">
-        <input type="text" id="cooldownMin" value="240" inputmode="numeric">
-        <span class="unit">min</span>
-      </div>
-      <button style="width:100%" onclick="cmdSetSession()">O'rnatish</button>
-    </div>
-
-    <div class="card">
-      <h2>Yangi user qo'shish</h2>
-      <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
-      <div class="row">
-        <input type="text" id="newUserMin" value="120" inputmode="numeric">
-        <span class="unit">min/kun</span>
-      </div>
-      <button class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
-    </div>
-
+    <button style="width:100%" onclick="cmdSetDaily()">O'rnatish</button>
   </div>
-
-  <!-- XAVFLI: ehtiyot bo'lish kerak bo'lgan, qaytarib bo'lmaydigan amallar -->
-  <div class="tab-panel" id="panelDanger" style="display:none;">
-
-    <div class="card">
-      <h2>To'liq reset</h2>
-      <div class="desc">Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.</div>
-      <button class="danger" style="width:100%" onclick="cmdReset()">Reset qilish</button>
+  <div class="card">
+    <h2>Bir o'tirish va tanaffus</h2>
+    <div class="desc">Uzluksiz ishlatish chegarasi va tugagach kutish vaqti.</div>
+    <label>Bir o'tirish chegarasi</label>
+    <div class="row">
+      <input type="text" id="sessMin" value="40" inputmode="numeric">
+      <span class="unit">min</span>
     </div>
-
-    <div class="card">
-      <h2>O'tgan kunni to'g'irlash</h2>
-      <div class="desc">Xato ketgan sanadagi vaqtni to'g'ridan-to'g'ri SQLite orqali tuzatadi.</div>
-      <label>Sana</label>
-      <input type="date" id="editDate">
-      <label>To'g'ri qiymat</label>
-      <div class="row">
-        <input type="text" id="editMin" inputmode="numeric">
-        <span class="unit">min</span>
-      </div>
-      <button class="secondary" style="width:100%" onclick="cmdEditHistory()">To'g'irlash</button>
+    <label>Tanaffus</label>
+    <div class="row">
+      <input type="text" id="cooldownMin" value="240" inputmode="numeric">
+      <span class="unit">min</span>
     </div>
-
-    <div class="card">
-      <h2>Hammasi uchun</h2>
-      <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi. Bekor qilib bo'lmaydi.</div>
-      <button class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
-    </div>
-
+    <button style="width:100%" onclick="cmdSetSession()">O'rnatish</button>
   </div>
-
-  <!-- KO'RISH: faqat ko'rsatadigan, hech narsani o'zgartirmaydigan buyruqlar -->
-  <div class="tab-panel" id="panelView" style="display:none;">
-
-    <div class="card">
-      <h2>Holat</h2>
-      <div class="desc">Barcha userlarning joriy holatini ko'rsatadi. Hech narsa o'zgarmaydi.</div>
-      <button style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
+  <div class="card">
+    <h2>Yangi user qo'shish</h2>
+    <div class="desc">Kuzatuvga yangi foydalanuvchi qo'shadi.</div>
+    <div class="row">
+      <input type="text" id="newUserMin" value="120" inputmode="numeric">
+      <span class="unit">min/kun</span>
     </div>
+    <button class="secondary" style="width:100%" onclick="cmdAddUser()">Qo'shish</button>
+  </div>
+  <div class="card">
+    <h2>Groq API key</h2>
+    <div class="desc">AI yordamchi shu key orqali ishlaydi. Key faqat shu brauzerning localStorage'ida saqlanadi — hech qayerga yuborilmaydi, faqat to'g'ridan-to'g'ri Groq'ga.</div>
+    <input type="password" id="groqKeyInput" placeholder="gsk_...">
+    <button style="width:100%" onclick="saveApiKey()">Saqlash</button>
+    <div class="key-status" id="keyStatus"></div>
+    <div class="hint">⚠️ Ogohlantirish: bu key brauzer kodida ochiq turadi. Har kim DevTools orqali ko'rishi mumkin. Faqat o'zing ishlatadigan shaxsiy sahifa uchun mos — public/ko'p odam kiradigan sahifaga qo'yma.</div>
+  </div>
+</div>
 
-    <div class="card">
-      <h2>Tarix</h2>
-      <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi. Hech narsa o'zgarmaydi.</div>
-      <div class="row">
-        <input type="text" id="histDays" value="14" inputmode="numeric">
-        <span class="unit">kun</span>
-      </div>
-      <button style="width:100%" onclick="cmdHistory()">Ko'rsatish</button>
+<div class="tab-panel" id="panelDanger" style="display:none;">
+  <div class="card">
+    <h2>To'liq reset</h2>
+    <div class="desc">Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.</div>
+    <button class="danger" style="width:100%" onclick="cmdReset()">Reset qilish</button>
+  </div>
+  <div class="card">
+    <h2>O'tgan kunni to'g'irlash</h2>
+    <div class="desc">Xato ketgan sanadagi vaqtni to'g'ridan-to'g'ri SQLite orqali tuzatadi.</div>
+    <label>Sana</label>
+    <input type="date" id="editDate">
+    <label>To'g'ri qiymat</label>
+    <div class="row">
+      <input type="text" id="editMin" inputmode="numeric">
+      <span class="unit">min</span>
     </div>
-
+    <button class="secondary" style="width:100%" onclick="cmdEditHistory()">To'g'irlash</button>
   </div>
+  <div class="card">
+    <h2>Hammasi uchun</h2>
+    <div class="desc">Barcha userlarni bugun uchun boshidan boshlaydi. Bekor qilib bo'lmaydi.</div>
+    <button class="danger" style="width:100%" onclick="cmdClearAll()">Barchasini tozalash</button>
+  </div>
+</div>
 
-  <!-- AI: tabiiy tilda so'rov, bw.md hujjatiga tayanib buyruq taklif qiladi.
-       Suhbat tarixi window.storage orqali saqlanadi va keyingi safar ochilganda tiklanadi. -->
-  <div class="tab-panel" id="panelAI" style="display:none;">
-
-    <div class="card">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <h2 style="margin:0;">AI yordamchi</h2>
-        <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
-      </div>
-      <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Hech narsa avtomatik ishga tushmaydi.</div>
-
-      <div class="ai-chat" id="aiChat">
-        <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
-      </div>
-
-      <div class="row" style="margin-top:14px;">
-        <input type="text" id="aiQuery" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh">
-      </div>
-      <button style="width:100%" id="aiAskBtn" onclick="askAI()">So'rash</button>
+<div class="tab-panel" id="panelView" style="display:none;">
+  <div class="card">
+    <h2>Holat</h2>
+    <div class="desc">Barcha userlarning joriy holatini ko'rsatadi. Hech narsa o'zgarmaydi.</div>
+    <button style="width:100%" onclick="cmdStatus()">Holatni ko'rish</button>
+  </div>
+  <div class="card">
+    <h2>Tarix</h2>
+    <div class="desc">Oxirgi necha kunlik sarfni ko'rsatadi. Hech narsa o'zgarmaydi.</div>
+    <div class="row">
+      <input type="text" id="histDays" value="14" inputmode="numeric">
+      <span class="unit">kun</span>
     </div>
+    <button style="width:100%" onclick="cmdHistory()">Ko'rsatish</button>
+  </div>
+</div>
 
+<!-- AI: tabiiy tilda so'rov, bw.md hujjatiga tayanib buyruq taklif qiladi.
+     Suhbat tarixi localStorage orqali saqlanadi va keyingi safar ochilganda tiklanadi. -->
+<div class="tab-panel" id="panelAI" style="display:none;">
+  <div class="card">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h2 style="margin:0;">AI yordamchi</h2>
+      <span class="ai-clear" onclick="clearAIHistory()" title="suhbatni tozalash">Tozalash</span>
+    </div>
+    <div class="desc">SQL yoki buyruq sintaksisini bilish shart emas — oddiy tilda yoz. AI ./bw.md hujjatiga va oldingi suhbatingizga asoslanib to'g'ri buyruqni taklif qiladi. Hech narsa avtomatik ishga tushmaydi.</div>
+    <div class="ai-chat" id="aiChat">
+      <div class="ai-empty" id="aiEmpty">— hali suhbat yo'q, savolingizni yozing —</div>
+    </div>
+    <div class="row" style="margin-top:14px;">
+      <input type="text" id="aiQuery" placeholder="masalan: Muhammadga bugun 30 daqiqa qo'sh">
+    </div>
+    <button style="width:100%" id="aiAskBtn" onclick="askAI()">So'rash</button>
   </div>
+</div>
 
-  <!-- OUTPUT -->
-  <div class="out-box" id="outBox">
-    <div class="out-empty">— hali buyruq yo'q —</div>
-  </div>
-  <div class="out-actions">
-    <button class="secondary" onclick="clearList()">Tozalash</button>
-  </div>
+<!-- OUTPUT -->
+<div class="out-box" id="outBox">
+  <div class="out-empty">— hali buyruq yo'q —</div>
+</div>
+<div class="out-actions">
+  <button class="secondary" onclick="clearList()">Tozalash</button>
+</div>
 </div>
 
 <!-- FULLSCREEN COMMAND VIEW -->
@@ -400,469 +375,473 @@
 </div>
 
 <script>
-  const BIN = 'sudo /usr/local/bin/brotherwatch';
-  let commands = [];
-  let lastSession = '40';
-  let lastCooldown = '240';
+const BIN = 'sudo /usr/local/bin/brotherwatch';
+let commands = [];
+let lastSession = '40';
+let lastCooldown = '240';
 
-  const USERNAME_RE = /^[a-zA-Z0-9_-]{1,32}$/;
-  const NUMBER_RE = /^-?\d+(\.\d+)?$/;
-  const POSITIVE_NUMBER_RE = /^\d+(\.\d+)?$/;
-  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const USERNAME_RE = /^[a-zA-Z0-9_-]{1,32}$/;
+const NUMBER_RE = /^-?\d+(\.\d+)?$/;
+const POSITIVE_NUMBER_RE = /^\d+(\.\d+)?$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-  const userSelect = document.getElementById('userSelect');
-  const customUser = document.getElementById('customUser');
+const userSelect = document.getElementById('userSelect');
+const customUser = document.getElementById('customUser');
 
-  function switchTab(name){
-    const panels = { quick: 'panelQuick', settings: 'panelSettings', danger: 'panelDanger', view: 'panelView', ai: 'panelAI' };
-    const btns = { quick: 'tabBtnQuick', settings: 'tabBtnSettings', danger: 'tabBtnDanger', view: 'tabBtnView', ai: 'tabBtnAI' };
-    Object.keys(panels).forEach(key => {
-      document.getElementById(panels[key]).style.display = (key === name) ? 'block' : 'none';
-      document.getElementById(btns[key]).classList.toggle('active', key === name);
-    });
-  }
-
-  userSelect.addEventListener('change', () => {
-    if(userSelect.value === '__custom'){
-      customUser.style.display = 'block';
-      customUser.value = '';
-      customUser.focus();
-    } else {
-      customUser.style.display = 'none';
-    }
+function switchTab(name){
+  const panels = { quick: 'panelQuick', settings: 'panelSettings', danger: 'panelDanger', view: 'panelView', ai: 'panelAI' };
+  const btns = { quick: 'tabBtnQuick', settings: 'tabBtnSettings', danger: 'tabBtnDanger', view: 'tabBtnView', ai: 'tabBtnAI' };
+  Object.keys(panels).forEach(key => {
+    document.getElementById(panels[key]).style.display = (key === name) ? 'block' : 'none';
+    document.getElementById(btns[key]).classList.toggle('active', key === name);
   });
+}
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    const d = document.getElementById('editDate');
-    d.value = today;
-    d.max = today;
+userSelect.addEventListener('change', () => {
+  if(userSelect.value === '__custom'){
+    customUser.style.display = 'block';
+    customUser.value = '';
+    customUser.focus();
+  } else {
+    customUser.style.display = 'none';
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const d = document.getElementById('editDate');
+  d.value = today;
+  d.max = today;
+});
+
+function sanitizeUsername(u){
+  if(typeof u !== 'string') return null;
+  const t = u.trim();
+  return USERNAME_RE.test(t) ? t : null;
+}
+function sanitizeNumber(v, allowNegative){
+  if(typeof v !== 'string') return null;
+  const t = v.trim();
+  const re = allowNegative ? NUMBER_RE : POSITIVE_NUMBER_RE;
+  return re.test(t) ? t : null;
+}
+function sanitizeDate(v){
+  if(typeof v !== 'string') return null;
+  const t = v.trim();
+  if(!DATE_RE.test(t)) return null;
+  const dt = new Date(t + 'T00:00:00Z');
+  return (!isNaN(dt.getTime()) && dt.toISOString().slice(0,10) === t) ? t : null;
+}
+function currentUser(){
+  return userSelect.value === '__custom' ? customUser.value.trim() : userSelect.value;
+}
+function requireSafeUser(){
+  const raw = currentUser();
+  if(!raw){ alert("Avval userni tanla yoki yoz"); return null; }
+  const safe = sanitizeUsername(raw);
+  if(!safe){ alert("Username noto'g'ri: faqat harf, raqam, - va _ (max 32 belgi)"); return null; }
+  return safe;
+}
+function val(id){ return document.getElementById(id).value.trim(); }
+
+function addCmd(cmd){
+  if(commands.includes(cmd)) return;
+  commands.push(cmd);
+  const newIdx = commands.length - 1;
+  render();
+  highlightLine(newIdx);
+}
+function highlightLine(idx){
+  const box = document.getElementById('outBox');
+  const line = box.querySelector(`.out-line[data-line="${idx}"]`);
+  if(!line) return;
+  box.scrollTo({ top: 0, behavior: 'smooth' });
+  requestAnimationFrame(() => {
+    line.classList.add('flash');
+    setTimeout(() => line.classList.remove('flash'), 900);
   });
-
-  function sanitizeUsername(u){
-    if(typeof u !== 'string') return null;
-    const t = u.trim();
-    return USERNAME_RE.test(t) ? t : null;
+}
+function render(){
+  const box = document.getElementById('outBox');
+  if(commands.length === 0){
+    box.innerHTML = '<div class="out-empty">— hali buyruq yo\'q —</div>';
+    return;
   }
-  function sanitizeNumber(v, allowNegative){
-    if(typeof v !== 'string') return null;
-    const t = v.trim();
-    const re = allowNegative ? NUMBER_RE : POSITIVE_NUMBER_RE;
-    return re.test(t) ? t : null;
-  }
-  function sanitizeDate(v){
-    if(typeof v !== 'string') return null;
-    const t = v.trim();
-    if(!DATE_RE.test(t)) return null;
-    const dt = new Date(t + 'T00:00:00Z');
-    return (!isNaN(dt.getTime()) && dt.toISOString().slice(0,10) === t) ? t : null;
-  }
-
-  function currentUser(){
-    return userSelect.value === '__custom' ? customUser.value.trim() : userSelect.value;
-  }
-
-  function requireSafeUser(){
-    const raw = currentUser();
-    if(!raw){ alert("Avval userni tanla yoki yoz"); return null; }
-    const safe = sanitizeUsername(raw);
-    if(!safe){ alert("Username noto'g'ri: faqat harf, raqam, - va _ (max 32 belgi)"); return null; }
-    return safe;
-  }
-
-  function val(id){ return document.getElementById(id).value.trim(); }
-
-  function addCmd(cmd){
-    if(commands.includes(cmd)) return;
-    commands.push(cmd);
-    const newIdx = commands.length - 1;
-    render();
-    highlightLine(newIdx);
-  }
-
-  function highlightLine(idx){
-    const box = document.getElementById('outBox');
-    const line = box.querySelector(`.out-line[data-line="${idx}"]`);
-    if(!line) return;
-    box.scrollTo({ top: 0, behavior: 'smooth' });
-    // keyingi frame'da qo'shamiz — shunda CSS animatsiya har safar qaytadan ishlaydi
-    requestAnimationFrame(() => {
-      line.classList.add('flash');
-      setTimeout(() => line.classList.remove('flash'), 900);
-    });
-  }
-
-  function render(){
-    const box = document.getElementById('outBox');
-    if(commands.length === 0){
-      box.innerHTML = '<div class="out-empty">— hali buyruq yo\'q —</div>';
-      return;
-    }
-    // eng oxirgi qo'shilgan buyruq eng tepada chiqadi
-    box.innerHTML = commands.map((c,i) => i).reverse().map(i => `
-      <div class="out-line" data-line="${i}">
-        <span class="left-group">
-          <span class="num">#${i+1}</span>
-          <span class="icon-btn expand" onclick="openFullscreen(${i})" title="to'liq ekran">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
-          </span>
+  box.innerHTML = commands.map((c,i) => i).reverse().map(i => `
+    <div class="out-line" data-line="${i}">
+      <span class="left-group">
+        <span class="num">#${i+1}</span>
+        <span class="icon-btn expand" onclick="openFullscreen(${i})" title="to'liq ekran">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
         </span>
-        <span class="txt" data-idx="${i}" title="bosib nusxa olish">${highlightCmd(commands[i])}</span>
-        <span class="icon-group">
-          <span class="icon-btn copy" onclick="copyOne(${i})" title="nusxa olish">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          </span>
-          <span class="icon-btn del" onclick="removeCmd(${i})" title="o'chirish">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-          </span>
+      </span>
+      <span class="txt" data-idx="${i}" title="bosib nusxa olish">${highlightCmd(commands[i])}</span>
+      <span class="icon-group">
+        <span class="icon-btn copy" onclick="copyOne(${i})" title="nusxa olish">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         </span>
-      </div>
-    `).join('');
-    box.querySelectorAll('.txt').forEach(el => {
-      el.addEventListener('click', () => copyOne(parseInt(el.dataset.idx,10)));
-    });
-  }
-
-  function copyOne(i){
-    if(i < 0 || i >= commands.length) return;
-    navigator.clipboard.writeText(commands[i]);
-  }
-
-  // ===== FULLSCREEN VIEW =====
-  let fsIndex = null;
-
-  function openFullscreen(i){
-    if(i < 0 || i >= commands.length) return;
-    fsIndex = i;
-    document.getElementById('fsTitle').textContent = `#${i+1}`;
-    document.getElementById('fsBody').innerHTML = highlightCmd(commands[i]);
-    const overlay = document.getElementById('fsOverlay');
-    overlay.classList.add('open');
-    // Haqiqiy brauzer fullscreen rejimini so'raymiz — ba'zi muhitlarda
-    // (masalan cheklangan iframe) rad etilishi mumkin, shu sabab try/catch bilan
-    const req = overlay.requestFullscreen || overlay.webkitRequestFullscreen;
-    if(req){
-      try{
-        const p = req.call(overlay);
-        if(p && p.catch) p.catch(() => {}); // rad etilsa ham modal oddiy overlay sifatida ishlayveradi
-      }catch(err){ /* fullscreen mavjud emas — muammo qilmaymiz */ }
-    }
-  }
-
-  function closeFullscreen(){
-    const overlay = document.getElementById('fsOverlay');
-    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
-    if(isFs){
-      const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      if(exit) exit.call(document).catch(() => {});
-    }
-    overlay.classList.remove('open');
-    fsIndex = null;
-  }
-
-  // Foydalanuvchi native Esc yoki brauzer tugmasi bilan fullscreen'dan chiqsa,
-  // modalni ham yopib qo'yamiz
-  document.addEventListener('fullscreenchange', () => {
-    if(!document.fullscreenElement) closeFullscreen();
+        <span class="icon-btn del" onclick="removeCmd(${i})" title="o'chirish">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </span>
+      </span>
+    </div>
+  `).join('');
+  box.querySelectorAll('.txt').forEach(el => {
+    el.addEventListener('click', () => copyOne(parseInt(el.dataset.idx,10)));
   });
-  document.addEventListener('webkitfullscreenchange', () => {
-    if(!document.webkitFullscreenElement) closeFullscreen();
-  });
+}
+function copyOne(i){
+  if(i < 0 || i >= commands.length) return;
+  navigator.clipboard.writeText(commands[i]);
+}
 
-  document.getElementById('fsCopyBtn').addEventListener('click', () => {
-    if(fsIndex !== null) copyOne(fsIndex);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape') closeFullscreen();
-  });
-
-  function escapeHtml(s){
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  // Buyruq matnini SQL-uslubidagi rangli qismlarga bo'ladi: kalit so'zlar, satrlar,
-  // sonlar, flaglar va binary yo'l — har biri o'z rangida ko'rsatiladi.
-  const SQL_KEYWORDS = ['sudo','sqlite3','UPDATE','SET','WHERE','AND','DELETE','FROM','date'];
-
-  function highlightCmd(raw){
-    let s = escapeHtml(raw);
-    // 1) qo'shtirnoqdagi satrlar ('...')
-    s = s.replace(/'([^']*)'/g, `<span class="tok-str">'$1'</span>`);
-    // 2) sonlar (alohida so'z sifatida)
-    s = s.replace(/\b\d+(\.\d+)?\b/g, '<span class="tok-num">$&</span>');
-    // 3) SQL/shell kalit so'zlari
-    SQL_KEYWORDS.forEach(k => {
-      const re = new RegExp(`\\b${k}\\b`, 'g');
-      s = s.replace(re, `<span class="tok-kw">${k}</span>`);
-    });
-    // 4) --flag ko'rinishidagi parametrlar
-    s = s.replace(/(--[a-z-]+)/g, '<span class="tok-flag">$1</span>');
-    // 5) brotherwatch binary yo'li
-    s = s.replace(/(\/usr\/local\/bin\/brotherwatch)/g, '<span class="tok-bin">$1</span>');
-    return s;
-  }
-
-  function removeCmd(i){ commands.splice(i,1); render(); }
-  function clearList(){ commands = []; render(); }
-
-  // ===== COMMANDS =====
-  function cmdStatus(){
-    addCmd(`${BIN} status`);
-  }
-
-  function cmdAddTime(){
-    const u = requireSafeUser(); if(!u) return;
-    const m = sanitizeNumber(val('addMin'), true);
-    if(!m){ alert("Minut faqat son bo'lishi kerak (masalan: 60 yoki -30)"); return; }
-    addCmd(m.startsWith('-') ? `${BIN} add-time -- ${u} ${m}` : `${BIN} add-time ${u} ${m}`);
-  }
-
-  function cmdSetDaily(){
-    const u = requireSafeUser(); if(!u) return;
-    const m = sanitizeNumber(val('dailyMin'), false);
-    if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
-    addCmd(`${BIN} set-daily ${u} ${m}`);
-  }
-
-  function cmdSetSession(){
-    const u = requireSafeUser(); if(!u) return;
-    const s = sanitizeNumber(val('sessMin'), false);
-    const c = sanitizeNumber(val('cooldownMin'), false);
-    if(!s || !c){ alert("Session va cooldown faqat musbat son bo'lishi kerak"); return; }
-    lastSession = s; lastCooldown = c;
-    addCmd(`${BIN} set-session ${u} --session-min ${s} --cooldown-min ${c}`);
-  }
-
-  function cmdUnlock(){
-    const u = requireSafeUser(); if(!u) return;
-    addCmd(`${BIN} unlock ${u}`);
-  }
-
-  function cmdReset(){
-    const u = requireSafeUser(); if(!u) return;
-    addCmd(`${BIN} reset ${u}`);
-  }
-
-  function cmdHistory(){
-    const u = requireSafeUser(); if(!u) return;
-    const raw = val('histDays');
-    let d = '';
-    if(raw){
-      d = sanitizeNumber(raw, false);
-      if(!d){ alert("Kunlar soni faqat musbat butun son bo'lishi kerak"); return; }
-    }
-    addCmd(`${BIN} history ${u}${d ? ' --days ' + d : ''}`);
-  }
-
-  function cmdAddUser(){
-    const u = requireSafeUser(); if(!u) return;
-    const m = sanitizeNumber(val('newUserMin'), false);
-    if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
-    addCmd(`${BIN} add-user ${u} ${m}`);
-  }
-
-  function cmdEditHistory(){
-    const u = requireSafeUser(); if(!u) return;
-    const d = sanitizeDate(val('editDate'));
-    if(!d){ alert("Sana noto'g'ri formatda (YYYY-MM-DD)"); return; }
-    const m = sanitizeNumber(val('editMin'), false);
-    if(!m){ alert("Minut faqat musbat son bo'lishi kerak"); return; }
-    addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE daily_usage SET minutes_used = ${m} WHERE username = '${u}' AND date = '${d}';"`);
-  }
-
-  function cmdClearAll(){
-    addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
-  }
-
-  // ===== AI YORDAMCHI =====
-  // Bu ./bw.md faylining o'rnini bosadigan hujjat — brotherwatch CLI va uning
-  // SQLite sxemasini tasvirlaydi. AI shu hujjatga tayanib javob beradi.
-  // Haqiqiy loyihada buni alohida bw.md faylidan o'qib, shu yerga qo'yish mumkin.
-  const BW_DOC = [
-    "# brotherwatch — ekran vaqtini boshqarish CLI",
-    "Binary: sudo /usr/local/bin/brotherwatch",
-    "",
-    "## Buyruqlar",
-    "status",
-    "  Barcha userlarning holatini ko'rsatadi. Argumentsiz.",
-    "",
-    "add-time <username> <minutes>",
-    "  Bugungi qolgan vaqtga daqiqa qo'shadi. Ayirish uchun manfiy son va -- ajratkichi kerak:",
-    "  sudo /usr/local/bin/brotherwatch add-time -- <username> -30",
-    "",
-    "set-daily <username> <minutes>",
-    "  Kunlik umumiy limitni o'zgartiradi (musbat butun son).",
-    "",
-    "set-session <username> --session-min <N> --cooldown-min <N>",
-    "  Bir o'tirish chegarasi va tanaffus vaqtini o'rnatadi. Ikkalasi ham majburiy.",
-    "",
-    "unlock <username>",
-    "  Joriy cooldown/lockni hozir tozalaydi.",
-    "",
-    "reset <username>",
-    "  Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.",
-    "",
-    "history <username> [--days N]",
-    "  Oxirgi N kunlik sarfni ko'rsatadi (standart 14).",
-    "",
-    "add-user <username> <minutes>",
-    "  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan.",
-    "",
-    "## Xavfli amallar (to'g'ridan-to'g'ri SQLite orqali)",
-    "DB yo'li: /var/lib/brotherwatch/brotherwatch.db",
-    "Jadval daily_usage(username, date, minutes_used) — o'tgan kunni tuzatish uchun:",
-    "  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE daily_usage SET minutes_used = <N> WHERE username = '<user>' AND date = '<YYYY-MM-DD>';\"",
-    "Barcha userlarni bugun uchun tozalash:",
-    "  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');\"",
-    "",
-    "## Qoidalar",
-    "- Username: faqat harf, raqam, - va _ (max 32 belgi).",
-    "- Har bir buyruq sudo bilan boshlanadi.",
-    "- Sana formati doim YYYY-MM-DD.",
-    "- Ma'lum userlar: muhammad, komoliddin — lekin boshqa username ham bo'lishi mumkin.",
-  ].join('\n');
-
-  // ===== AI SUHBAT TARIXI =====
-  // aiHistory elementlari: { role: 'user'|'assistant', text, cmd, clarify, accepted, time }
-  let aiHistory = [];
-  const AI_STORAGE_KEY = 'ai_chat_history';
-
-  async function loadAIHistory(){
+let fsIndex = null;
+function openFullscreen(i){
+  if(i < 0 || i >= commands.length) return;
+  fsIndex = i;
+  document.getElementById('fsTitle').textContent = `#${i+1}`;
+  document.getElementById('fsBody').innerHTML = highlightCmd(commands[i]);
+  const overlay = document.getElementById('fsOverlay');
+  overlay.classList.add('open');
+  const req = overlay.requestFullscreen || overlay.webkitRequestFullscreen;
+  if(req){
     try{
-      const r = await window.storage.get(AI_STORAGE_KEY, false);
-      if(r && r.value){
-        aiHistory = JSON.parse(r.value);
-      }
-    }catch(err){
-      aiHistory = []; // hali hech narsa saqlanmagan yoki storage mavjud emas
-    }
-    renderAIChat();
+      const p = req.call(overlay);
+      if(p && p.catch) p.catch(() => {});
+    }catch(err){ /* fullscreen mavjud emas — muammo qilmaymiz */ }
   }
-
-  async function saveAIHistory(){
-    try{
-      await window.storage.set(AI_STORAGE_KEY, JSON.stringify(aiHistory), false);
-    }catch(err){ /* saqlash muvaffaqiyatsiz bo'lsa ham suhbat shu sessiyada ishlayveradi */ }
+}
+function closeFullscreen(){
+  const overlay = document.getElementById('fsOverlay');
+  const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+  if(isFs){
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if(exit) exit.call(document).catch(() => {});
   }
+  overlay.classList.remove('open');
+  fsIndex = null;
+}
+document.addEventListener('fullscreenchange', () => {
+  if(!document.fullscreenElement) closeFullscreen();
+});
+document.addEventListener('webkitfullscreenchange', () => {
+  if(!document.webkitFullscreenElement) closeFullscreen();
+});
+document.getElementById('fsCopyBtn').addEventListener('click', () => {
+  if(fsIndex !== null) copyOne(fsIndex);
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') closeFullscreen();
+});
 
-  async function clearAIHistory(){
-    aiHistory = [];
-    renderAIChat();
-    try{ await window.storage.delete(AI_STORAGE_KEY, false); }catch(err){}
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+const SQL_KEYWORDS = ['sudo','sqlite3','UPDATE','SET','WHERE','AND','DELETE','FROM','date'];
+function highlightCmd(raw){
+  let s = escapeHtml(raw);
+  s = s.replace(/'([^']*)'/g, `<span class="tok-str">'$1'</span>`);
+  s = s.replace(/\b\d+(\.\d+)?\b/g, '<span class="tok-num">$&</span>');
+  SQL_KEYWORDS.forEach(k => {
+    const re = new RegExp(`\\b${k}\\b`, 'g');
+    s = s.replace(re, `<span class="tok-kw">${k}</span>`);
+  });
+  s = s.replace(/(--[a-z-]+)/g, '<span class="tok-flag">$1</span>');
+  s = s.replace(/(\/usr\/local\/bin\/brotherwatch)/g, '<span class="tok-bin">$1</span>');
+  return s;
+}
+
+function removeCmd(i){ commands.splice(i,1); render(); }
+function clearList(){ commands = []; render(); }
+
+// ===== COMMANDS =====
+function cmdStatus(){ addCmd(`${BIN} status`); }
+function cmdAddTime(){
+  const u = requireSafeUser(); if(!u) return;
+  const m = sanitizeNumber(val('addMin'), true);
+  if(!m){ alert("Minut faqat son bo'lishi kerak (masalan: 60 yoki -30)"); return; }
+  addCmd(m.startsWith('-') ? `${BIN} add-time -- ${u} ${m}` : `${BIN} add-time ${u} ${m}`);
+}
+function cmdSetDaily(){
+  const u = requireSafeUser(); if(!u) return;
+  const m = sanitizeNumber(val('dailyMin'), false);
+  if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
+  addCmd(`${BIN} set-daily ${u} ${m}`);
+}
+function cmdSetSession(){
+  const u = requireSafeUser(); if(!u) return;
+  const s = sanitizeNumber(val('sessMin'), false);
+  const c = sanitizeNumber(val('cooldownMin'), false);
+  if(!s || !c){ alert("Session va cooldown faqat musbat son bo'lishi kerak"); return; }
+  lastSession = s; lastCooldown = c;
+  addCmd(`${BIN} set-session ${u} --session-min ${s} --cooldown-min ${c}`);
+}
+function cmdUnlock(){ const u = requireSafeUser(); if(!u) return; addCmd(`${BIN} unlock ${u}`); }
+function cmdReset(){ const u = requireSafeUser(); if(!u) return; addCmd(`${BIN} reset ${u}`); }
+function cmdHistory(){
+  const u = requireSafeUser(); if(!u) return;
+  const raw = val('histDays');
+  let d = '';
+  if(raw){
+    d = sanitizeNumber(raw, false);
+    if(!d){ alert("Kunlar soni faqat musbat butun son bo'lishi kerak"); return; }
   }
+  addCmd(`${BIN} history ${u}${d ? ' --days ' + d : ''}`);
+}
+function cmdAddUser(){
+  const u = requireSafeUser(); if(!u) return;
+  const m = sanitizeNumber(val('newUserMin'), false);
+  if(!m){ alert("Kunlik limit faqat musbat son bo'lishi kerak"); return; }
+  addCmd(`${BIN} add-user ${u} ${m}`);
+}
+function cmdEditHistory(){
+  const u = requireSafeUser(); if(!u) return;
+  const d = sanitizeDate(val('editDate'));
+  if(!d){ alert("Sana noto'g'ri formatda (YYYY-MM-DD)"); return; }
+  const m = sanitizeNumber(val('editMin'), false);
+  if(!m){ alert("Minut faqat musbat son bo'lishi kerak"); return; }
+  addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE daily_usage SET minutes_used = ${m} WHERE username = '${u}' AND date = '${d}';"`);
+}
+function cmdClearAll(){
+  addCmd(`sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db "UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');"`);
+}
 
-  function renderAIChat(){
-    const chat = document.getElementById('aiChat');
-    if(aiHistory.length === 0){
-      chat.innerHTML = '<div class="ai-empty">— hali suhbat yo\'q, savolingizni yozing —</div>';
-      return;
-    }
-    chat.innerHTML = aiHistory.map((m, idx) => {
-      if(m.role === 'user'){
-        return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
-      }
-      // assistant xabari
-      let inner = '';
-      if(m.clarify){
-        inner = `<div>${escapeHtml(m.clarify)}</div>`;
-      } else if(m.cmd){
-        inner = `<div>${escapeHtml(m.explain || '')}</div>
-          <div class="ai-cmd">${highlightCmd(m.cmd)}</div>`;
-        if(m.accepted){
-          inner += `<div class="accepted">✓ ro'yxatga qo'shildi</div>`;
-        } else {
-          inner += `<div class="ai-actions">
-            <button onclick="acceptAICmd(${idx})">Ro'yxatga qo'shish</button>
-          </div>`;
-        }
-      } else {
-        inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
-      }
-      return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
-    }).join('');
-    chat.scrollTop = chat.scrollHeight;
-  }
+// ===== GROQ API KEY (localStorage) =====
+// GitHub Pages'da window.storage YO'Q — bu Claude Artifacts'ning ichki API'si.
+// Shuning uchun oddiy localStorage ishlatamiz. Key faqat shu brauzerda qoladi,
+// hech qanday serverga yuborilmaydi — faqat Groq'ga to'g'ridan-to'g'ri fetch qilinadi.
+const GROQ_KEY_STORAGE = 'bw_groq_api_key';
 
-  async function askAI(){
-    const input = document.getElementById('aiQuery');
-    const query = input.value.trim();
-    const askBtn = document.getElementById('aiAskBtn');
-    if(!query){ alert("Avval so'rovingizni yozing"); return; }
-
-    aiHistory.push({ role: 'user', text: query, time: Date.now() });
+function getApiKey(){
+  try{ return localStorage.getItem(GROQ_KEY_STORAGE) || ''; }
+  catch(err){ return ''; }
+}
+function saveApiKey(){
+  const input = document.getElementById('groqKeyInput');
+  const key = input.value.trim();
+  if(!key){ alert("Key kiritilmadi"); return; }
+  try{
+    localStorage.setItem(GROQ_KEY_STORAGE, key);
     input.value = '';
-    renderAIChat();
-    askBtn.disabled = true;
+    renderKeyStatus();
+  }catch(err){
+    alert("localStorage ishlamayapti (private/incognito rejim yoki brauzer bloklagan bo'lishi mumkin)");
+  }
+}
+function renderKeyStatus(){
+  const el = document.getElementById('keyStatus');
+  const key = getApiKey();
+  if(key){
+    el.textContent = `✓ key saqlangan (...${key.slice(-4)})`;
+    el.className = 'key-status ok';
+  } else {
+    el.textContent = '✗ key kiritilmagan — AI yordamchi ishlamaydi';
+    el.className = 'key-status missing';
+  }
+}
 
-    const systemPrompt = "Sen brotherwatch CLI bo'yicha yordamchisan. Faqat quyidagi hujjatga (bw.md) "
-      + "asoslanib javob ber, hujjatda yo'q buyruq o'ylab topma:\n\n" + BW_DOC + "\n\n"
-      + "Foydalanuvchi tabiiy tilda (o'zbekcha) so'rov beradi. Suhbat tarixiga qarab (masalan avvalgi "
-      + "xabarda qaysi user haqida gap ketgani) kontekstni tushun. Sen ANIQ bitta terminal buyrug'ini "
-      + "tayyorlaysan. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
-      + "markdown belgisi qo'shma:\n"
-      + '{"command": "<to\'liq buyruq yoki bo\'sh satr>", "explain": "<qisqa o\'zbekcha izoh>", "clarify": "<agar noaniq bo\'lsa savol, aks holda bo\'sh satr>"}\n'
-      + "Agar so'rov noaniq bo'lsa (masalan qaysi user yoki necha daqiqa noma'lum), command'ni bo'sh "
-      + "qoldir va clarify maydoniga savol yoz. Buyruq har doim 'sudo' bilan boshlanishi va hujjatdagi "
-      + "sintaksisga to'liq mos bo'lishi shart.";
+// ===== AI YORDAMCHI =====
+// bw.md hujjatining o'rnini bosadigan matn — brotherwatch CLI va SQLite sxemasini tasvirlaydi.
+const BW_DOC = [
+"# brotherwatch — ekran vaqtini boshqarish CLI",
+"Binary: sudo /usr/local/bin/brotherwatch",
+"",
+"## Buyruqlar",
+"status",
+"  Barcha userlarning holatini ko'rsatadi. Argumentsiz.",
+"",
+"add-time <username> <minutes>",
+"  Bugungi qolgan vaqtga daqiqa qo'shadi. Ayirish uchun manfiy son va -- ajratkichi kerak:",
+"  sudo /usr/local/bin/brotherwatch add-time -- <username> -30",
+"",
+"set-daily <username> <minutes>",
+"  Kunlik umumiy limitni o'zgartiradi (musbat butun son).",
+"",
+"set-session <username> --session-min <N> --cooldown-min <N>",
+"  Bir o'tirish chegarasi va tanaffus vaqtini o'rnatadi. Ikkalasi ham majburiy.",
+"",
+"unlock <username>",
+"  Joriy cooldown/lockni hozir tozalaydi.",
+"",
+"reset <username>",
+"  Kunlik hisobni to'liq to'ldiradi va qulfni ochadi.",
+"",
+"history <username> [--days N]",
+"  Oxirgi N kunlik sarfni ko'rsatadi (standart 14).",
+"",
+"add-user <username> <minutes>",
+"  Kuzatuvga yangi foydalanuvchi qo'shadi, kunlik limit bilan.",
+"",
+"## Xavfli amallar (to'g'ridan-to'g'ri SQLite orqali)",
+"DB yo'li: /var/lib/brotherwatch/brotherwatch.db",
+"Jadval daily_usage(username, date, minutes_used) — o'tgan kunni tuzatish uchun:",
+"  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE daily_usage SET minutes_used = <N> WHERE username = '<user>' AND date = '<YYYY-MM-DD>';\"",
+"Barcha userlarni bugun uchun tozalash:",
+"  sudo sqlite3 /var/lib/brotherwatch/brotherwatch.db \"UPDATE users SET remaining_min = daily_allowance_min, session_active_since = NULL, cooldown_until = NULL, warned = 0; DELETE FROM daily_usage WHERE date = date('now');\"",
+"",
+"## Qoidalar",
+"- Username: faqat harf, raqam, - va _ (max 32 belgi).",
+"- Har bir buyruq sudo bilan boshlanadi.",
+"- Sana formati doim YYYY-MM-DD.",
+"- Ma'lum userlar: muhammad, komoliddin — lekin boshqa username ham bo'lishi mumkin.",
+].join('\n');
 
-    // Advanced: butun suhbat tarixini API'ga kontekst sifatida yuboramiz —
-    // shunda AI oldingi savol-javoblarni "eslab" javob beradi
-    const apiMessages = aiHistory.map(m => ({
-      role: m.role === 'user' ? 'user' : 'assistant',
-      content: m.role === 'user' ? m.text : (m.rawText || JSON.stringify({ command: m.cmd || '', explain: m.explain || '', clarify: m.clarify || '' }))
-    }));
+// ===== AI SUHBAT TARIXI (localStorage) =====
+let aiHistory = [];
+const AI_HISTORY_STORAGE = 'bw_ai_chat_history';
 
-    try{
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: apiMessages
-        })
-      });
-      const data = await response.json();
-      const text = (data.content || [])
-        .map(b => b.type === 'text' ? b.text : '')
-        .join('')
-        .trim()
-        .replace(/^```json|```$/g, '')
-        .trim();
-      const parsed = JSON.parse(text);
+function loadAIHistory(){
+  try{
+    const raw = localStorage.getItem(AI_HISTORY_STORAGE);
+    aiHistory = raw ? JSON.parse(raw) : [];
+  }catch(err){
+    aiHistory = []; // hali hech narsa saqlanmagan yoki JSON buzilgan
+  }
+  renderAIChat();
+}
+function saveAIHistory(){
+  try{ localStorage.setItem(AI_HISTORY_STORAGE, JSON.stringify(aiHistory)); }
+  catch(err){ /* saqlash muvaffaqiyatsiz bo'lsa ham suhbat shu sessiyada ishlayveradi */ }
+}
+function clearAIHistory(){
+  aiHistory = [];
+  renderAIChat();
+  try{ localStorage.removeItem(AI_HISTORY_STORAGE); }catch(err){}
+}
 
-      const entry = { role: 'assistant', rawText: text, time: Date.now() };
-      if(parsed.clarify && parsed.clarify.trim()){
-        entry.clarify = parsed.clarify.trim();
-      } else if(parsed.command && parsed.command.trim()){
-        entry.cmd = parsed.command.trim();
-        entry.explain = parsed.explain || '';
-      } else {
-        entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
-      }
-      aiHistory.push(entry);
-    }catch(err){
-      aiHistory.push({ role: 'assistant', text: 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.', time: Date.now() });
-    }finally{
-      askBtn.disabled = false;
-      renderAIChat();
-      saveAIHistory();
+function renderAIChat(){
+  const chat = document.getElementById('aiChat');
+  if(aiHistory.length === 0){
+    chat.innerHTML = '<div class="ai-empty">— hali suhbat yo\'q, savolingizni yozing —</div>';
+    return;
+  }
+  chat.innerHTML = aiHistory.map((m, idx) => {
+    if(m.role === 'user'){
+      return `<div class="ai-msg user"><div class="ai-bubble">${escapeHtml(m.text)}</div></div>`;
     }
+    let inner = '';
+    if(m.clarify){
+      inner = `<div>${escapeHtml(m.clarify)}</div>`;
+    } else if(m.cmd){
+      inner = `<div>${escapeHtml(m.explain || '')}</div>
+        <div class="ai-cmd">${highlightCmd(m.cmd)}</div>`;
+      if(m.accepted){
+        inner += `<div class="accepted">✓ ro'yxatga qo'shildi</div>`;
+      } else {
+        inner += `<div class="ai-actions">
+          <button onclick="acceptAICmd(${idx})">Ro'yxatga qo'shish</button>
+        </div>`;
+      }
+    } else {
+      inner = `<div class="ai-error">${escapeHtml(m.text || "Aniq javob bo'lmadi")}</div>`;
+    }
+    return `<div class="ai-msg assistant"><div class="ai-bubble">${inner}</div></div>`;
+  }).join('');
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function askAI(){
+  const input = document.getElementById('aiQuery');
+  const query = input.value.trim();
+  const askBtn = document.getElementById('aiAskBtn');
+  if(!query){ alert("Avval so'rovingizni yozing"); return; }
+
+  const apiKey = getApiKey();
+  if(!apiKey){
+    alert("Avval Sozlamalar tabida Groq API key kiriting va saqlang");
+    switchTab('settings');
+    return;
   }
 
-  function acceptAICmd(idx){
-    const m = aiHistory[idx];
-    if(!m || !m.cmd) return;
-    addCmd(m.cmd);
-    m.accepted = true;
+  aiHistory.push({ role: 'user', text: query, time: Date.now() });
+  input.value = '';
+  renderAIChat();
+  askBtn.disabled = true;
+
+  const systemPrompt = "Sen brotherwatch CLI bo'yicha yordamchisan. Faqat quyidagi hujjatga (bw.md) "
+    + "asoslanib javob ber, hujjatda yo'q buyruq o'ylab topma:\n\n" + BW_DOC + "\n\n"
+    + "Foydalanuvchi tabiiy tilda (o'zbekcha) so'rov beradi. Suhbat tarixiga qarab (masalan avvalgi "
+    + "xabarda qaysi user haqida gap ketgani) kontekstni tushun. Sen ANIQ bitta terminal buyrug'ini "
+    + "tayyorlaysan. Javobni FAQAT quyidagi JSON formatida ber, boshqa hech qanday matn, izoh yoki "
+    + "markdown belgisi qo'shma:\n"
+    + '{"command": "<to\'liq buyruq yoki bo\'sh satr>", "explain": "<qisqa o\'zbekcha izoh>", "clarify": "<agar noaniq bo\'lsa savol, aks holda bo\'sh satr>"}\n'
+    + "Agar so'rov noaniq bo'lsa (masalan qaysi user yoki necha daqiqa noma'lum), command'ni bo'sh "
+    + "qoldir va clarify maydoniga savol yoz. Buyruq har doim 'sudo' bilan boshlanishi va hujjatdagi "
+    + "sintaksisga to'liq mos bo'lishi shart.";
+
+  // Butun suhbat tarixini API'ga kontekst sifatida yuboramiz —
+  // shunda AI oldingi savol-javoblarni "eslab" javob beradi
+  const apiMessages = aiHistory.map(m => ({
+    role: m.role === 'user' ? 'user' : 'assistant',
+    content: m.role === 'user' ? m.text : (m.rawText || JSON.stringify({ command: m.cmd || '', explain: m.explain || '', clarify: m.clarify || '' }))
+  }));
+
+  try{
+    // Groq — OpenAI-compatible endpoint. Model deprecated bo'lgani uchun
+    // (llama-3.3-70b-versatile), Groq tavsiya qilgan yangisi ishlatiladi.
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + apiKey
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-oss-120b",
+        max_tokens: 1000,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...apiMessages
+        ]
+      })
+    });
+
+    if(!response.ok){
+      const errBody = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${errBody.slice(0,200)}`);
+    }
+
+    const data = await response.json();
+    const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '')
+      .trim()
+      .replace(/^```json|```$/g, '')
+      .trim();
+
+    const parsed = JSON.parse(text);
+    const entry = { role: 'assistant', rawText: text, time: Date.now() };
+    if(parsed.clarify && parsed.clarify.trim()){
+      entry.clarify = parsed.clarify.trim();
+    } else if(parsed.command && parsed.command.trim()){
+      entry.cmd = parsed.command.trim();
+      entry.explain = parsed.explain || '';
+    } else {
+      entry.text = "AI aniq javob bera olmadi. Boshqacha yozib ko'ring.";
+    }
+    aiHistory.push(entry);
+  }catch(err){
+    aiHistory.push({ role: 'assistant', text: 'Xatolik yuz berdi: ' + err.message, time: Date.now() });
+  }finally{
+    askBtn.disabled = false;
     renderAIChat();
     saveAIHistory();
   }
+}
 
-  loadAIHistory();
-  render();
+function acceptAICmd(idx){
+  const m = aiHistory[idx];
+  if(!m || !m.cmd) return;
+  addCmd(m.cmd);
+  m.accepted = true;
+  renderAIChat();
+  saveAIHistory();
+}
+
+document.getElementById('groqKeyInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') saveApiKey();
+});
+
+renderKeyStatus();
+loadAIHistory();
+render();
 </script>
 </body>
 </html>
